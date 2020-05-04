@@ -1,11 +1,11 @@
 # svSocket
 
-[![Linux & OSX Build Status](https://travis-ci.org/SciViews/svSocket.svg )](https://travis-ci.org/SciViews/svSocket)
-[![Win Build Status](https://ci.appveyor.com/api/projects/status/github/SciViews/svSocket?branch=master&svg=true)](http://ci.appveyor.com/project/phgrosjean/svSocket)
+[![Linux & OSX Build Status](https://travis-ci.com/SciViews/svSocket.svg )](https://travis-ci.com/SciViews/svSocket)
+[![Win Build Status](https://ci.appveyor.com/api/projects/status/github/SciViews/svSocket?branch=master&svg=true)](https://ci.appveyor.com/project/phgrosjean/svSocket)
 [![Coverage Status](https://img.shields.io/codecov/c/github/SciViews/svSocket/master.svg)
 ](https://codecov.io/github/SciViews/svSocket?branch=master)
-[![CRAN Status](http://www.r-pkg.org/badges/version/svSocket)](http://cran.r-project.org/package=svSocket)
-[![License](https://img.shields.io/badge/license-GPL-blue.svg)](http://www.gnu.org/licenses/gpl-2.0.html)
+[![CRAN Status](https://www.r-pkg.org/badges/version/svSocket)](https://cran.r-project.org/package=svSocket)
+[![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 
 SciViews - socket server.
 
