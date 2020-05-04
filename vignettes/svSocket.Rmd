@@ -1,0 +1,21 @@
+---
+title: "SciViews socket server"
+author: "Philippe Grosjean (phgrosjean@sciviews.org)"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{SciViews socket server}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The SciViews **svSocket** package provides a stateful, multi-client and preemptive socket server. Socket transaction are operational even when R is busy in its main event loop (calculation done at the prompt). This R socket server uses the excellent asynchronous socket ports management by Tcl, and thus, it needs a working version of Tcl/Tk (>= 8.4) and of the **tcltk** R package.

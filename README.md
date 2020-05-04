@@ -1,22 +1,20 @@
+
 # svSocket
 
-[![Linux & OSX Build Status](https://travis-ci.com/SciViews/svSocket.svg )](https://travis-ci.com/SciViews/svSocket)
+<!-- badges: start -->
+[![Linux Build Status](https://travis-ci.com/SciViews/svSocket.svg )](https://travis-ci.com/SciViews/svSocket)
 [![Win Build Status](https://ci.appveyor.com/api/projects/status/github/SciViews/svSocket?branch=master&svg=true)](https://ci.appveyor.com/project/phgrosjean/svSocket)
 [![Coverage Status](https://img.shields.io/codecov/c/github/SciViews/svSocket/master.svg)
 ](https://codecov.io/github/SciViews/svSocket?branch=master)
 [![CRAN Status](https://www.r-pkg.org/badges/version/svSocket)](https://cran.r-project.org/package=svSocket)
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Life
+cycle stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+<!-- badges: end -->
 
-SciViews - socket server.
-
-_Build badges are as follows (R versions at the time of the build)._
-- _Status for devel R version for both Linux and Mac OS X at left._
-- _Status for the latest stable version of R under Windows at right._ 
-
+> A socket server that allow for other processes to connect to R and interact with it as if it was at the command line directly.
 
 ## Installation
-
-### Latest stable version
 
 The latest stable version of **svSocket** can simply be installed from [CRAN](http://cran.r-project.org):
 
@@ -24,10 +22,7 @@ The latest stable version of **svSocket** can simply be installed from [CRAN](ht
 install.packages("svSocket")
 ```
 
-
-### Development version
-
-Make sure you have the **devtools** R package installed:
+You can also install the latest developement version. Make sure you have the **devtools** R package installed:
 
 ```r
 install.packages("devtools")
@@ -43,10 +38,9 @@ R should install all required dependencies automatically, and then it should com
 
 Latest devel version of **svSocket** (source + Windows binaires for the latest stable version of R at the time of compilation) is also available from [appveyor](https://ci.appveyor.com/project/phgrosjean/svSocket/build/artifacts).
 
+## Further explore svSocket
 
-## Usage
-
-Make the **svSocket** package available in your R session:
+You can get further help about this package this way: Make the **svSocket** package available in your R session:
 
 ```r
 library("svSocket")
@@ -57,10 +51,14 @@ Get help about this package:
 ```r
 library(help = "svSocket")
 help("svSocket-package")
+vignette("svSocket") # None is installed with install_github()
 ```
 
-For further instructions, please, refer to these help pages.
+For further instructions, please, refer to these help pages at https://www.sciviews.org/svSocket/.
 
+## Code of Conduct
+
+Please note that the **svSocket** project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
 ## Note to developers
 

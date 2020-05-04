@@ -1,82 +1,55 @@
 language: r
-# Allow for sudo commands, because we need Tcl and the containerised version
-# on Travis CI does not provide it!
-sudo: required
+sudo: false
+cache: packages
 
 r:
+  - oldrel
+  - release
   - devel
 
 os:
   - linux
-  - osx
+# Disable MacOS X for now  - osx
 
 branches:
   only:
     - master
-    - macosx
+#    - macosx
 
-# On Linux, there is warning complaining for missing DISPLAY, so that Tk
-# is not available... but we don't need Tk, only Tcl here => ignore warnings
-warnings_are_errors: false
+# This is used to compact and check size of vignettes
+addons:
+  apt:
+    update: true
+    packages:
+      - libgs-dev
+      - qpdf
+      - ghostscript
+
+# Be strict when checking our package, but don't build the manual
+warnings_are_errors: true
 # Note: can also add --no-build-vignettes to both
-r_build_args: --no-manual --no-resave-data
+r_build_args: --no-manual --no-resave-data --compact-vignettes=gs+qpdf
 r_check_args: --no-manual --as-cran
+disable_homebrew: true
+
+#matrix:
+#  include:
+#    - os: osx
+#      r_build_args: --no-manual --no-build-vignettes --no-resave-data
+#      r_check_args: --no-manual --no-build-vignettes
 
 # Email notifications
 notifications:
   email:
     on_success: change
     on_failure: change
-     
-# Environment variables
-env:
- global:
-   - CRAN: http://cran.rstudio.com
 
-# System dependencies
-#apt_packages:
-# - libcurl4-openssl-dev
-# - libxml2-dev
-# Binary R packages (faster, but not always latest versions!)
-r_binary_packages:
-  - svMisc
-  # For covr
-  - jsonlite  
-  - devtools
-  - httr
-  - crayon
-  - htmltools
-  - knitr
-  #- rex # Fails to compile for precise in Rutter's PPA
-  # For rex
-  - magrittr
-  - lazyeval
-  # For tests
-  - svUnit
+# covr is not a dependency for the package. So, install it explicitly
+# On MacOS X, suggested packages are not installed any more, so, force it here too:
+#r_binary_packages:
+#  - covr
+#  - knitr
+#  - testthat
 
-# R package to be compiled from sources (latest versions!)
-r_packages:
-  - rex
-  - covr
-  - svHttp
-
-# Bioconductor packages
-#bioc_packages:
-
-# Install the bleeding edge version of a package from github (eg to pick
-# up a not-yet-released bugfix)
-#r_github_packages:
-# - jimhester/covr
-
-# Install additional stuff
-#before_install:
-#  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-#  - sudo apt-get update -qq
-#  - sudo apt-get install -qq <packages>
-#  - sudo apt-get install -qq g++-4.8
-#  - export CXX="g++-4.8"
-#  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-#  - sudo ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/lib/libgfortran.so
- 
 after_success:
   - Rscript -e 'covr::codecov()'
