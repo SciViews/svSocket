@@ -12,7 +12,7 @@
 cycle stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->
 
-> A socket server that allow for other processes to connect to R and interact with it as if it was at the command line directly.
+> A socket server that allows for another process to connect to R and to interact with it as if it was at the command line directly.
 
 ## Installation
 
