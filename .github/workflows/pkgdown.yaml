@@ -14,10 +14,12 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
+      - name: Install XQuartz
+        run: brew cask install xquartz
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
-          remotes::install_github("SciViews/svPkgdown")
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
 
@@ -33,6 +35,7 @@ jobs:
           install.packages("remotes")
           remotes::install_deps(dependencies = TRUE)
           remotes::install_dev("pkgdown")
+          remotes::install_github("SciViews/svPkgdown")
         shell: Rscript {0}
 
       - name: Install package
