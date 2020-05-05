@@ -14,7 +14,7 @@ of you svSocket R package installation (where you have found this ReadMe.txt
 file), and then, issue the following command:
 
 $ cd [your_path_here]/library/svSocket/etc/
-$ tclsh SimpleClient.tcl.
+$ tclsh SimpleClient.tcl
 
 Follow instructions: you can type R commands in the console of the client
 application and R returns the results of the calculation. You have no command
@@ -26,8 +26,8 @@ enable multiline mode. You achieve this by configuring the client with:
 
 parSocket(<<<s>>>, bare = FALSE)
 
-Experiment various R code in this console. Also, you can turn echo of your
-commands and the output to the regular R console with:
+Experiment various R code in this console. Also, you can turn echo on/off of
+your commands and the output to the regular R console with:
 
 parSocket(<<<s>>>, echo = TRUE)
 
@@ -36,10 +36,25 @@ connect local clients for the moment. This is a restriction very easy to
 eliminate, but we need to install protection (password access, crypting of the
 data) before doing so (planned for the future).
 
+There is a prototype secure version too. Make sure the 'tls' Tcl package is
+installed on the server side. Then, in an R pocess, run:
+
+> library(svSocket)
+Loading required package: tcltk
+Loading Tcl/Tk interface ... done
+> startSocketServer(secure = TRUE)
+[1] TRUE
+
+Then, you can connect from a separate console to this secure server using the
+modified version:
+
+$ cd [your_path_here]/library/svSocket/etc/
+$ tclsh SimpleClientSecure.tcl
+
 You have also another prototype client for Mozilla applications (Firefox,
 Thunderbird, Komodo, etc.) in development. See ?koCmd in the svIDE package to
 learn how to install and use it. Once you have installed the 'SciViews x.y'
-toolbox folber in Komodo, go to 'SciViews x.y/Communication/Scoket client'. If
+toolbox folder in Komodo, go to 'SciViews x.y/Communication/Socket client'. If
 the R socket server is started on the same machine as explaned here above,
 double clicking on this macro triggers some code in R that asks for the syntax
 of the 'library()' function, and then, disconnect immediately. The result is

@@ -1,6 +1,6 @@
 #!/usr/local/bin/tclsh8.4
 # Open a terminal and issue
-# $ tclsh SimpleClient.tcl
+# $ tclsh SimpleClientSecure.tcl
 # when the R socket server is running
 # (Under Windows, you need to install ActiveTcl8.4 first;
 # see http://www.activestate.com/Products/ActiveTcl/)
@@ -8,6 +8,7 @@
 # We use a TLS secure layer to communicate with the server
 package require tls
 # Start R socket server with  startSocketServer(secure = TRUE)
+# but you need to install the 'tls' package in the Tcl you use from R first
 
 # These are parameters of the R socket server
 set rsHost "localhost"	;# localhost for example, but could be distant machine
