@@ -16,6 +16,10 @@ branches:
     - master
 #    - macosx
 
+# This is required by tcltk
+services:
+  - xvfb
+
 # This is used to compact and check size of vignettes
 addons:
   apt:
