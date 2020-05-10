@@ -58,7 +58,7 @@ try(system2(rscript, "--vanilla -e 'svSocket::startSocketServer(8888); while (!e
 # Leave enough time for the server to get ready
 Sys.sleep(3)
 # and make sure we can connect to it
-try(con <- socketConnection(host = "localhost", port = 8888, blocking = FALSE),
+con <- try(socketConnection(host = "localhost", port = 8888, blocking = FALSE),
   silent = TRUE)
 server_ready <- !inherits(con, "try-error")
 ```

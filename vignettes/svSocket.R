@@ -7,44 +7,52 @@ knitr::opts_chunk$set(
 ## ----install, eval=FALSE------------------------------------------------------
 #  install.packages("svSocket")
 
-## ----launch-server------------------------------------------------------------
-# Start a separate R process with a script that launch a socket server on 8888
-# and wait for the varible `done` in `.GlobalEnv` to finish
-rscript <- Sys.which("Rscript")
-system2(rscript, "--vanilla -e 'svSocket::startSocketServer(8888); while (!exists(\"done\")) Sys.sleep(1)'", wait = FALSE)
+## ----launch-server, eval=FALSE------------------------------------------------
+#  # Start a separate R process with a script that launch a socket server on 8888
+#  # and wait for the varible `done` in `.GlobalEnv` to finish
+#  rscript <- Sys.which("Rscript")
+#  system2(rscript, "--vanilla -e 'svSocket::startSocketServer(8888); while (!exists(\"done\")) Sys.sleep(1)'", wait = FALSE)
 
 ## ----wait, include=FALSE------------------------------------------------------
+# Launch the server
+rscript <- Sys.which("Rscript")
+try(system2(rscript, "--vanilla -e 'svSocket::startSocketServer(8888); while (!exists(\"done\")) Sys.sleep(1)'", wait = FALSE), silent = TRUE)
+
 # Leave enough time for the server to get ready
 Sys.sleep(3)
+# and make sure we can connect to it
+con <- try(socketConnection(host = "localhost", port = 8888, blocking = FALSE),
+  silent = TRUE)
+server_ready <- !inherits(con, "try-error")
 
-## ----connect------------------------------------------------------------------
-con <- socketConnection(host = "localhost", port = 8888, blocking = FALSE)
+## ----connect, eval=FALSE------------------------------------------------------
+#  con <- socketConnection(host = "localhost", port = 8888, blocking = FALSE)
 
-## ----eval1--------------------------------------------------------------------
+## ----eval1, eval=server_ready-------------------------------------------------
 library(svSocket)
 evalServer(con, '1 + 1')
 
-## ----evalx--------------------------------------------------------------------
+## ----evalx, eval=server_ready-------------------------------------------------
 # Local x
 x <- "local"
 # x on the server
 evalServer(con, 'x <- "server"')
 
-## ----evalx2-------------------------------------------------------------------
+## ----evalx2, eval=server_ready------------------------------------------------
 evalServer(con, 'ls()')
 evalServer(con, 'x')
 
-## ----localx-------------------------------------------------------------------
+## ----localx, eval=server_ready------------------------------------------------
 ls()
 x
 
-## ----iris2--------------------------------------------------------------------
+## ----iris2, eval=server_ready-------------------------------------------------
 data(iris)
 evalServer(con, iris2, iris)
 evalServer(con, "ls()")         # iris2 is there
 evalServer(con, "head(iris2)")   # ... and its content is OK
 
-## ----low-level----------------------------------------------------------------
+## ----low-level, eval=server_ready---------------------------------------------
 # Send a command to the R server (low-level version)
 cat('{Sys.sleep(2); "Done!"}\n', file = con)
 # Wait for, and get response from the server
@@ -55,10 +63,10 @@ while (!length(res)) {
 }
 res
 
-## ----cat----------------------------------------------------------------------
+## ----cat, eval=server_ready---------------------------------------------------
 cat(res, "\n")
 
-## ----runServer----------------------------------------------------------------
+## ----runServer, eval=server_ready---------------------------------------------
 runServer <- function(con, code) {
   cat(code, "\n", file = con)
   res <- NULL
@@ -71,23 +79,23 @@ runServer <- function(con, code) {
   invisible(res)
 }
 
-## ----runServer2---------------------------------------------------------------
+## ----runServer2, eval=server_ready--------------------------------------------
 (runServer(con, '{Sys.sleep(2); "Done!"}'))
 
-## ----async--------------------------------------------------------------------
+## ----async, eval=server_ready-------------------------------------------------
 (runServer(con, '\n<<<H>>>{Sys.sleep(2); "Done!"}'))
 
-## ----pars1--------------------------------------------------------------------
+## ----pars1, eval=server_ready-------------------------------------------------
 cat(runServer(con, 'ls(envir = svSocket::parSocket(<<<s>>>))'), sep = "\n")
 
-## ----pars2--------------------------------------------------------------------
+## ----pars2, eval=server_ready-------------------------------------------------
 cat(runServer(con, 'svSocket::parSocket(<<<s>>>)$bare'), sep = "\n")
 
-## ----bare-false---------------------------------------------------------------
+## ----bare-false, eval=server_ready--------------------------------------------
 (runServer(con, '\n<<<H>>>svSocket::parSocket(<<<s>>>, bare = FALSE)'))
 (runServer(con, '1 + 1'))
 
-## ----close--------------------------------------------------------------------
+## ----close, eval=server_ready-------------------------------------------------
 # Usually, the client does not stop the server, but it is possible here
 evalServer(con, 'done <- NULL') # The server will stop after this transaction
 close(con)

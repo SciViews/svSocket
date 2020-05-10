@@ -1,7 +1,7 @@
 Package: svSocket
 Type: Package
 Version: 1.0.0
-Date: 2020-05-04
+Date: 2020-05-10
 Title: 'SciViews' - Socket Server
 Description: Implements a socket server allowing to connect clients to R.
 Authors@R: c(person("Philippe", "Grosjean", role = c("aut", "cre"),
