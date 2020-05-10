@@ -251,7 +251,7 @@ transferable between the two R processes.</p>
 <span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='no'>X</span>)
 <span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='st'>"Z &lt;- X + 3"</span>)  <span class='co'># Send an assignment to execute remotely</span>
 <span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='no'>X</span> + <span class='no'>Z</span>)
-<span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='st'>"Z &lt;- X + 1:1000; NULL"</span>)   <span class='co'># Same but prevents Y being returned</span>
+<span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='st'>"Z &lt;- X + 1:1000; NULL"</span>)   <span class='co'># Same but do not return Z</span>
 <span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Z</span>))
 <span class='no'>Z</span> <span class='kw'>&lt;-</span> <span class='fu'>evalServer</span>(<span class='no'>con</span>, <span class='no'>Z</span>)        <span class='co'># Bring it back to client</span>
 <span class='no'>Z</span>

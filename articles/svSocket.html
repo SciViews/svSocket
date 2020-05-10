@@ -104,7 +104,7 @@
       <h1 data-toc-skip>SciViews socket server</h1>
                         <h4 class="author">Philippe Grosjean (<a href="mailto:phgrosjean@sciviews.org" class="email">phgrosjean@sciviews.org</a>)</h4>
             
-            <h4 class="date">2020-05-05</h4>
+            <h4 class="date">2020-05-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/SciViews/svSocket/blob/master/vignettes/svSocket.Rmd"><code>vignettes/svSocket.Rmd</code></a></small>
       <div class="hidden name"><code>svSocket.Rmd</code></div>
@@ -113,12 +113,148 @@
 
     
     
-<p>The SciViews <strong>svSocket</strong> package provides a stateful, multi-client and preemptive socket server. Socket transaction are operational even when R is busy in its main event loop (calculation done at the prompt). This R socket server uses the excellent asynchronous socket ports management by Tcl, and thus, it needs a working version of Tcl/Tk (&gt;= 8.4) and of the <strong>tcltk</strong> R package.</p>
+<blockquote>
+<p>The SciViews <strong>svSocket</strong> server implements an R server that is mainly designed to interact with the R prompt from a separate process. The <strong>svSocket</strong> clients and the R console share the same global environment (<code>.GlobalEnv</code>). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are <a href="https://nbcgib.uesc.br/tinnr/en/">Tinn-R</a> and Komodo with the <a href="https://community.komodoide.com/packages/addons/sciviews-k/">SciViews-K extension</a>.</p>
+</blockquote>
+<div id="quick-install-and-use" class="section level2">
+<h2 class="hasAnchor">
+<a href="#quick-install-and-use" class="anchor"></a>Quick install and use</h2>
+<p>The SciViews <strong>svSocket</strong> package provides a stateful, multi-client and preemptive socket server. Socket transactions are operational even when R is busy in its main event loop (calculation done at the prompt). This R socket server uses the excellent asynchronous socket ports management by Tcl, and thus, it needs a working version of Tcl/Tk (&gt;= 8.4), the <strong>tcltk</strong> R package, and R with <code><a href="https://rdrr.io/r/base/Logic.html">isTRUE(capabilities("tcltk"))</a></code>.</p>
+<p>Install the <strong>svSocket</strong> package as usual:</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"svSocket"</span>)</pre></body></html></div>
+<p>(For the development version, install first <code>devtools</code> or <code>remotes</code>, and then use something like <code>remotes::github_install("SciViews/SciViews")</code>)</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># Start a separate R process with a script that launch a socket server on 8888</span>
+<span class="co"># and wait for the varible `done` in `.GlobalEnv` to finish</span>
+<span class="no">rscript</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html">Sys.which</a></span>(<span class="st">"Rscript"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/system2.html">system2</a></span>(<span class="no">rscript</span>, <span class="st">"--vanilla -e 'svSocket::startSocketServer(8888); while (!exists(\"done\")) Sys.sleep(1)'"</span>, <span class="kw">wait</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
+<p>Sometimes (on MacOS Catalina, for instance), you are prompted to allow for R to use a socket. Of course, you have to allow to get an operational server.</p>
+<p>What this code does is:</p>
+<ul>
+<li>Get the path to <code>Rscript</code> using <code>Sysd.which</code> -Start it with a command that launches the socket server on port 8888<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> (<code><a href="../reference/startSocketServer.html">svSocket::startSocketServer(8888)</a></code>)</li>
+<li>Wait that the variable <code>done</code> appears in <code>.GlobalEnv</code> as a simple mean to keep the server alive.</li>
+<li>Since <code><a href="https://rdrr.io/r/base/system2.html">system2()</a></code> is invoked with <code>wait = FALSE</code>, the command exits as soon as the server is created and you can interact at the R prompt.</li>
+</ul>
+<p>As you can see, creating a socket server with <strong>svSocket</strong> is easy. Now, let’s connect to it. It is also very simple:</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">con</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/connections.html">socketConnection</a></span>(<span class="kw">host</span> <span class="kw">=</span> <span class="st">"localhost"</span>, <span class="kw">port</span> <span class="kw">=</span> <span class="fl">8888</span>, <span class="kw">blocking</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
+<p>Here, we use the <code><a href="https://rdrr.io/r/base/connections.html">socketConnection()</a></code> that comes with base R. So, <strong>svSocket</strong> is even not required to connect an R client to our server. The connection is not blocking. We have the control of the prompt immediately.</p>
+<p>Now, we can execute code in our R server process with <code><a href="../reference/evalServer.html">svSocket::evalServer()</a></code>:</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">svSocket</span>)
+<span class="co">#&gt; Warning in fun(libname, pkgname): no display name and no $DISPLAY environment</span>
+<span class="co">#&gt; variable</span>
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">'1 + 1'</span>)
+<span class="co">#&gt; [1] 2</span></pre></body></html></div>
+<p>The instruction is indeed executed in the server, and the result is returned to the client transparently. You now master two separate R process: the original one where you interact at the R prompt (<code><a href="https://rdrr.io/r/base/Comparison.html">&gt;</a></code>), and the server process that you can interact with through <code><a href="../reference/evalServer.html">evalServer()</a></code>. To understand this, we will create the variable <code>x</code> on both processes, but with different values:</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co"># Local x</span>
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="st">"local"</span>
+<span class="co"># x on the server</span>
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">'x &lt;- "server"'</span>)
+<span class="co">#&gt; [1] "server"</span></pre></body></html></div>
+<p>Now, let’s look what is available on the server side:</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">'ls()'</span>)
+<span class="co">#&gt; [1] "x"</span>
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">'x'</span>)
+<span class="co">#&gt; [1] "server"</span></pre></body></html></div>
+<p>Obviously, there is only one variable, <code>x</code>, with value <code>"server"</code>. All right … and in our original process?</p>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span>()
+<span class="co">#&gt; [1] "con"     "rscript" "x"</span>
+<span class="no">x</span>
+<span class="co">#&gt; [1] "local"</span></pre></body></html></div>
+<p>We have <code>x</code>, but also <code>con</code> and <code>rsscript</code>. The value of <code>x</code> locally is <code>"local"</code>.</p>
+<p>As you can see, commands and results are rather similar. And since the processes are different, so are <code>x</code> in both processes.</p>
+<p>If you want to transfer data to the server, you can still use <code><a href="../reference/evalServer.html">evalServer()</a></code>, with the name you want for the variable on the server instead of a string with R code, and as third argument, the name of the local variable whose the content will be copied to the server. <code><a href="../reference/evalServer.html">evalServer()</a></code> manages to send the data to the server (by serializing the data on your side and deserializing it on the server). Here, we will transfer the <code>iris</code> data frame to the server under the <code>iris2</code> name:</p>
+<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">iris</span>)
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="no">iris2</span>, <span class="no">iris</span>)
+<span class="co">#&gt; [1] TRUE</span>
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">"ls()"</span>)         <span class="co"># iris2 is there</span>
+<span class="co">#&gt; [1] "iris2" "x"</span>
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">"head(iris2)"</span>)   <span class="co"># ... and its content is OK</span>
+<span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span>
+<span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa</span>
+<span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa</span>
+<span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span>
+<span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa</span>
+<span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa</span>
+<span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa</span></pre></body></html></div>
+<p>For more examples on using <code>evalServer</code>, see its man page with <code><a href="../reference/evalServer.html">?evalServer</a></code>.</p>
+</div>
+<div id="lower-level-interaction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#lower-level-interaction" class="anchor"></a>Lower-level interaction</h2>
+<p>The <strong>svSocket</strong> server also allows, of course, for a lower-level interaction with the server, with a lot more options. Here, you send something to the server using <code>cat, file = con)</code> (make sure to end your command by a carriage return <code>\n</code>, or the server will wait indefinitely for the next part of the instruction!), and you read results using <code><a href="https://rdrr.io/r/base/readLines.html">readLines(con)</a></code>. Of course, you must wait that R processes the command before reading results back:</p>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co"># Send a command to the R server (low-level version)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="st">'{Sys.sleep(2); "Done!"}\n'</span>, <span class="kw">file</span> <span class="kw">=</span> <span class="no">con</span>)
+<span class="co"># Wait for, and get response from the server</span>
+<span class="no">res</span> <span class="kw">&lt;-</span> <span class="kw">NULL</span>
+<span class="kw">while</span> (!<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">res</span>)) {
+  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span>(<span class="fl">0.01</span>)
+  <span class="no">res</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span>(<span class="no">con</span>)
+}
+<span class="no">res</span>
+<span class="co">#&gt; [1] "[1] \"Done!\"" ""</span></pre></body></html></div>
+<p>Here you got the results send back as strings. If you want to display them on the client’s console as if it was output there (like <code><a href="../reference/evalServer.html">evalServer()</a></code> does), you should use <code><a href="https://rdrr.io/r/base/cat.html">cat( sep = "\n")</a></code>:</p>
+<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="no">res</span>, <span class="st">"\n"</span>)
+<span class="co">#&gt; [1] "Done!"</span></pre></body></html></div>
+<p>For convenience, we will wrap all this a function <code>runServer()</code>:</p>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">runServer</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">con</span>, <span class="no">code</span>) {
+  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="no">code</span>, <span class="st">"\n"</span>, <span class="kw">file</span> <span class="kw">=</span> <span class="no">con</span>)
+  <span class="no">res</span> <span class="kw">&lt;-</span> <span class="kw">NULL</span>
+  <span class="kw">while</span> (!<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">res</span>)) {
+    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span>(<span class="fl">0.01</span>)
+    <span class="no">res</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span>(<span class="no">con</span>)
+  }
+  <span class="co"># Use this instruction to output results as if code was run at the prompt</span>
+  <span class="co">#cat(res, "\n")</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="no">res</span>)
+}</pre></body></html></div>
+<p>The transaction is now much easier:</p>
+<div class="sourceCode" id="cb12"><html><body><pre class="r">(<span class="fu">runServer</span>(<span class="no">con</span>, <span class="st">'{Sys.sleep(2); "Done!"}'</span>))
+<span class="co">#&gt; [1] "[1] \"Done!\"" ""</span></pre></body></html></div>
+</div>
+<div id="configuration-and-special-instructions" class="section level2">
+<h2 class="hasAnchor">
+<a href="#configuration-and-special-instructions" class="anchor"></a>Configuration and special instructions</h2>
+<p>Now at the low-level (not within <code><a href="../reference/evalServer.html">evalServer()</a></code> but within our <code>runServer()</code> function), one can insert special code <code>&lt;&lt;&lt;X&gt;&gt;&gt;</code> with <code>X</code> being a marker that the server will use on his side. The last instruction we send instructed the server to wait for 2 sec and then, to return <code>"Done!"</code>. We have send the instruction to the server and <em>wait</em> for it to finish processing and then, we got the results back. Thus, you original R process is locked down the time the server processes the code. Note that we had to lock it down on our side using the <code>while(!length(res))</code> construct. It means that communication between the server and the client is asynchronous, but process of the command must be made synchronous. If you want to return immediately in the calling R process <em>before</em> the instruction is processed in the server, you could just consider to drop the <code>while(...)</code> section. <strong>This is not a good idea!</strong> Indeed, R will send results back and you will read them on the next <code><a href="https://rdrr.io/r/base/readLines.html">readLines(con)</a></code> you issue, and mix it with, perhaps, the result of the next instruction. So, here, we really must tell the R server to send nothing back to us. This is done by inserting the special instruction <code>&lt;&lt;&lt;h&gt;&gt;&gt;</code> on one line (surrounded by <code>\n</code>). This way, we still have to wait for the instruction to be processed on the server, but nothing is returned back to the client. Also, sending <code>&lt;&lt;&lt;H&gt;&gt;&gt;</code> will result into an immediate finalization of the transaction by the server <em>before</em> the instruction is processed.</p>
+<div class="sourceCode" id="cb13"><html><body><pre class="r">(<span class="fu">runServer</span>(<span class="no">con</span>, <span class="st">'\n&lt;&lt;&lt;H&gt;&gt;&gt;{Sys.sleep(2); "Done!"}'</span>))
+<span class="co">#&gt; [1] ""   "\f"</span></pre></body></html></div>
+<p>Here, we got the result immediately, but it is <em>not</em> the results of the code execution. Our R server simply indicates that he got our code, he parsed it and is about to process it on his side by returning an empty string <code>""</code>.</p>
+<p>There are several special instructions you can use. See <code><a href="../reference/parSocket.html">?parSocket</a></code> for further details. The server can be configured to behave in a given way, and that configuration is persistent from one connection to the other for the same client. The function <code><a href="../reference/parSocket.html">parSocket()</a></code> allows to change or query the configuration. Its first argument is the name of the client on the server-side… but from the client, you don’t necessarily know which name the server gave to you (one can connect several different clients at the same time, and default name is <code>sock</code> followed by Tcl name of the client socket connection). Using <code>&lt;&lt;&lt;s&gt;&gt;&gt;</code> as a placeholder for this name circumvents the problem. <code><a href="../reference/parSocket.html">parSocket()</a></code> returns an environment that contains configuration variables. Here is the list of configuration item for us:</p>
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu">runServer</span>(<span class="no">con</span>, <span class="st">'ls(envir = svSocket::parSocket(&lt;&lt;&lt;s&gt;&gt;&gt;))'</span>), <span class="kw">sep</span> <span class="kw">=</span> <span class="st">"\n"</span>)
+<span class="co">#&gt;  [1] "bare"         "client"       "clientsocket" "code"         "continue"    </span>
+<span class="co">#&gt;  [6] "echo"         "flag"         "last"         "multiline"    "prompt"      </span>
+<span class="co">#&gt; [11] "serverport"</span></pre></body></html></div>
+<p>The <code>bare</code> item indicates if the server sends bare results, or also returns a prompt, acting more like a terminal. By default, it returns the bare results. Here is the current value:</p>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu">runServer</span>(<span class="no">con</span>, <span class="st">'svSocket::parSocket(&lt;&lt;&lt;s&gt;&gt;&gt;)$bare'</span>), <span class="kw">sep</span> <span class="kw">=</span> <span class="st">"\n"</span>)
+<span class="co">#&gt; [1] TRUE</span></pre></body></html></div>
+<p>And here is how you can change it:</p>
+<div class="sourceCode" id="cb16"><html><body><pre class="r">(<span class="fu">runServer</span>(<span class="no">con</span>, <span class="st">'\n&lt;&lt;&lt;H&gt;&gt;&gt;svSocket::parSocket(&lt;&lt;&lt;s&gt;&gt;&gt;, bare = FALSE)'</span>))
+<span class="co">#&gt; [1] ""   "\f"</span>
+(<span class="fu">runServer</span>(<span class="no">con</span>, <span class="st">'1 + 1'</span>))
+<span class="co">#&gt; [1] "[1] 2" ":&gt; "</span></pre></body></html></div>
+<p>When <code>bare = FALSE</code> the server issues the formatted command with a prompt (<code>:&gt;</code> by default) and the result. For more information about *svSocket** server configuration, see <code><a href="../reference/parSocket.html">?parSocket</a></code>. There are also functions to manipulate the pool of clients and their configurations from the server-side, and the server can also send unattended data to client, see <code><a href="../reference/sendSocketClients.html">?sendSocketClients</a></code>. finally, the workhorse function on the server-side is <code><a href="../reference/processSocket.html">processSocket()</a></code>. See <code><a href="../reference/processSocket.html">?processSocket</a></code> to learn more about it. You can provide your own process function to the server if you need to.</p>
+</div>
+<div id="disconnection" class="section level2">
+<h2 class="hasAnchor">
+<a href="#disconnection" class="anchor"></a>Disconnection</h2>
+<p>Don’t forget to close the connection, once you have done using <code><a href="https://rdrr.io/r/base/connections.html">close(con)</a></code>, and you can also close the server from the server-side by using <code><a href="../reference/startSocketServer.html">stopSocketServer()</a></code>. But never use it from the client-side because you will obviously break in the middle of the transaction. If you want to close the server from the client, you have to install a mechanisms that will nicely shut down the server <em>after</em> the transaction is processed. Here, we have installed such a mechanism by detecting the presence of a variable named <code>done</code> on the server-side. So:</p>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="co"># Usually, the client does not stop the server, but it is possible here</span>
+<span class="fu"><a href="../reference/evalServer.html">evalServer</a></span>(<span class="no">con</span>, <span class="st">'done &lt;- NULL'</span>) <span class="co"># The server will stop after this transaction</span>
+<span class="co">#&gt; NULL</span>
+<span class="fu"><a href="https://rdrr.io/r/base/connections.html">close</a></span>(<span class="no">con</span>)</pre></body></html></div>
+<p>You can also access the <strong>svSocket</strong> server from another language. There is a very basic example written in Tcl in the <code>/etc</code> subdirectory of the <strong>svSocket</strong> package. See the <code>ReadMe.txt</code> file there. The Tcl script <code>SimpleClient.tcl</code> implements a Tcl client in a few dozens of code lines. For other examples, you can inspect the code of <a href="https://community.komodoide.com/packages/addons/sciviews-k/">SciViews-K</a>, and the code of <a href="https://nbcgib.uesc.br/tinnr/en/">Tinn-R</a> for a Pascal version. Writing clients in C, Java, Python, etc. should not be difficult if you inspire you from these examples. Finally, there is another implementation of a similar R server through HTTP in the <strong>svHttp</strong> package.</p>
+</div>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Of course, this port must be free. If not, just use another value.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 
