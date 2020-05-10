@@ -8,6 +8,8 @@
 
 - Web site done with **pkgdown**.
 
+- Vignettes.
+
 # svSocket 0.9-58
 
 - Switch to Github for development; use CI.

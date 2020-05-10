@@ -6,7 +6,7 @@
 \alias{svSocket-package}
 \title{svSocket: 'SciViews' - Socket Server}
 \description{
-Implements a simple socket server allowing to connect clients to R.
+Implements a socket server allowing to connect clients to R.
 }
 \details{
 The SciViews svSocket package provides a stateful, multi-client and

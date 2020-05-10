@@ -3,7 +3,7 @@ Type: Package
 Version: 1.0.0
 Date: 2020-05-04
 Title: 'SciViews' - Socket Server
-Description: Implements a simple socket server allowing to connect clients to R.
+Description: Implements a socket server allowing to connect clients to R.
 Authors@R: c(person("Philippe", "Grosjean", role = c("aut", "cre"),
   email = "phgrosjean@sciviews.org",
   comment = c(ORCID = "0000-0002-2694-9471")),

@@ -73,7 +73,7 @@ X  # Generates an error, X is not here in the client, only on the server
 evalServer(con, X)
 evalServer(con, "Z <- X + 3")  # Send an assignment to execute remotely
 evalServer(con, X + Z)
-evalServer(con, "Z <- X + 1:1000; NULL")   # Same but prevents Y being returned
+evalServer(con, "Z <- X + 1:1000; NULL")   # Same but do not return Z
 evalServer(con, length(Z))
 Z <- evalServer(con, Z)        # Bring it back to client
 Z

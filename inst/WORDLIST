@@ -3,6 +3,7 @@ calltip
 calltips
 CLI
 config
+deserializing
 devtools
 esc
 evalServer
@@ -14,11 +15,14 @@ io
 ip
 Jiang
 Komodo
+MacOS
 ORCID
 Ph
 phgrosjean
+pkgdown
 ReadMe
 REPL
+Roxygen
 Rserver
 Ryczkowski
 sciviews
