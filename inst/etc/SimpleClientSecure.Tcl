@@ -1,4 +1,4 @@
-#!/usr/local/bin/tclsh8.4
+#!/usr/bin/tclsh
 # Open a terminal and issue
 # $ tclsh SimpleClientSecure.tcl
 # when the R socket server is running

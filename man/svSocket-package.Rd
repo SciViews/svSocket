@@ -43,6 +43,7 @@ details.
 Useful links:
 \itemize{
   \item \url{https://github.com/SciViews/svSocket}
+  \item \url{https://www.sciviews.org/svSocket/}
   \item Report bugs at \url{https://github.com/SciViews/svSocket/issues}
 }
 

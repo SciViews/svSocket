@@ -1,5 +1,6 @@
 SimpleClient.tcl is a Tcl script that implements a very simple client for R
-socket server.
+socket server. This was developed and tested with tclsh8.4. It may not work
+with higher Tcl version!
 
 Launch R and start a R socket server:
 
