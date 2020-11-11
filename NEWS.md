@@ -2,6 +2,8 @@
 
 - The Tcl client example in /etc now uses /usr/bin/tclsh.
 
+- {svHttp} package is added in suggests.
+
 # svSocket 1.0.0
 
 - Code adapted to R 4.0.
