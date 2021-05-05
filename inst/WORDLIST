@@ -2,6 +2,7 @@ appveyor
 calltip
 calltips
 CLI
+CMD
 config
 deserializing
 devtools

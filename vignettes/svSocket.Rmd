@@ -18,19 +18,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-> The SciViews **svSocket** server implements an R server that is mainly designed to interact with the R prompt from a separate process. The **svSocket** clients and the R console share the same global environment (`.GlobalEnv`). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are [Tinn-R](https://nbcgib.uesc.br/tinnr/en/) and Komodo with the [SciViews-K extension](https://community.komodoide.com/packages/addons/sciviews-k/).
+> The SciViews {svSocket} server implements an R server that is mainly designed to interact with the R prompt from a separate process. The {svSocket} clients and the R console share the same global environment (`.GlobalEnv`). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are [Tinn-R](https://nbcgib.uesc.br/tinnr/en/) and Komodo with the [SciViews-K extension](https://community.komodoide.com/packages/addons/sciviews-k/).
 
 ## Quick install and use
 
-The SciViews **svSocket** package provides a stateful, multi-client and preemptive socket server. Socket transactions are operational even when R is busy in its main event loop (calculation done at the prompt). This R socket server uses the excellent asynchronous socket ports management by Tcl, and thus, it needs a working version of Tcl/Tk (>= 8.4), the **tcltk** R package, and R with `isTRUE(capabilities("tcltk"))`.
+The SciViews {svSocket} package provides a stateful, multi-client and preemptive socket server. Socket transactions are operational even when R is busy in its main event loop (calculation done at the prompt). This R socket server uses the excellent asynchronous socket ports management by Tcl, and thus, it needs a working version of Tcl/Tk (>= 8.4), the {tcltk} R package, and R with `isTRUE(capabilities("tcltk"))`.
 
-Install the **svSocket** package as usual:
+Install the {svSocket} package as usual:
 
 ```{r install, eval=FALSE}
 install.packages("svSocket")
 ```
 
-(For the development version, install first `devtools` or `remotes`, and then use something like `remotes::github_install("SciViews/SciViews")`)
+(For the development version, install first `devtools` or `remotes`, and then use something like `remotes::github_install("SciViews/svSocket")`)
 
 ```{r launch-server, eval=FALSE}
 # Start a separate R process with a script that launch a socket server on 8888
@@ -48,27 +48,32 @@ What this code does is:
 - Wait that the variable `done` appears in `.GlobalEnv` as a simple mean to keep the server alive.
 - Since `system2()` is invoked with `wait = FALSE`, the command exits as soon as the server is created and you can interact at the R prompt.
 
-As you can see, creating a socket server with **svSocket** is easy. Now, let's connect to it. It is also very simple:
+As you can see, creating a socket server with {svSocket} is easy. Now, let's connect to it. It is also very simple:
 
-```{r wait, include=FALSE}
+```{r no_server_version, include=FALSE}
+server_ready <- FALSE
+```
+
+```{r wait, include=FALSE, eval=FALSE}
 # Launch the server
 rscript <- Sys.which("Rscript")
 try(system2(rscript, "--vanilla -e 'svSocket::startSocketServer(8888); while (!exists(\"done\")) Sys.sleep(1)'", wait = FALSE), silent = TRUE)
 
 # Leave enough time for the server to get ready
-Sys.sleep(3)
+Sys.sleep(5)
 # and make sure we can connect to it
-con <- try(socketConnection(host = "localhost", port = 8888, blocking = FALSE),
+con <- try(socketConnection(host = "localhost", port = 8888,
+    blocking = FALSE, timeout = 30),
   silent = TRUE)
 server_ready <- !inherits(con, "try-error")
 ```
 
-
 ```{r connect, eval=FALSE}
-con <- socketConnection(host = "localhost", port = 8888, blocking = FALSE)
+con <- socketConnection(host = "localhost", port = 8888,
+  blocking = FALSE, timeout = 30)
 ```
 
-Here, we use the `socketConnection()` that comes with base R. So, **svSocket** is even not required to connect an R client to our server. The connection is not blocking. We have the control of the prompt immediately.
+Here, we use the `socketConnection()` that comes with base R in non-blocking mode and a time out at 30 sec. So, {svSocket} is even not required to connect an R client to our server. The connection is not blocking. We have the control of the prompt immediately.
 
 Now, we can execute code in our R server process with `svSocket::evalServer()`:
 
@@ -117,7 +122,7 @@ For more examples on using `evalServer`, see its man page with `?evalServer`.
 
 ## Lower-level interaction
 
-The **svSocket** server also allows, of course, for a lower-level interaction with the server, with a lot more options. Here, you send something to the server using `cat, file = con)` (make sure to end your command by a carriage return `\n`, or the server will wait indefinitely for the next part of the instruction!), and you read results using `readLines(con)`. Of course, you must wait that R processes the command before reading results back:
+The {svSocket} server also allows, of course, for a lower-level interaction with the server, with a lot more options. Here, you send something to the server using `cat, file = con)` (make sure to end your command by a carriage return `\n`, or the server will wait indefinitely for the next part of the instruction!), and you read results using `readLines(con)`. Of course, you must wait that R processes the command before reading results back:
 
 ```{r low-level, eval=server_ready}
 # Send a command to the R server (low-level version)
@@ -188,7 +193,7 @@ And here is how you can change it:
 (runServer(con, '1 + 1'))
 ```
 
-When `bare = FALSE` the server issues the formatted command with a prompt (`:>` by default) and the result. For more information about *svSocket** server configuration, see `?parSocket`. There are also functions to manipulate the pool of clients and their configurations from the server-side, and the server can also send unattended data to client, see `?sendSocketClients`. finally, the workhorse function on the server-side is `processSocket()`. See `?processSocket` to learn more about it. You can provide your own process function to the server if you need to.
+When `bare = FALSE` the server issues the formatted command with a prompt (`:>` by default) and the result. For more information about {svSocket} server configuration, see `?parSocket`. There are also functions to manipulate the pool of clients and their configurations from the server-side, and the server can also send unattended data to client, see `?sendSocketClients`. finally, the workhorse function on the server-side is `processSocket()`. See `?processSocket` to learn more about it. You can provide your own process function to the server if you need to.
 
 ## Disconnection
 
@@ -200,4 +205,4 @@ evalServer(con, 'done <- NULL') # The server will stop after this transaction
 close(con)
 ```
 
-You can also access the **svSocket** server from another language. There is a very basic example written in Tcl in the `/etc` subdirectory of the **svSocket** package. See the `ReadMe.txt` file there. The Tcl script `SimpleClient.tcl` implements a Tcl client in a few dozens of code lines. For other examples, you can inspect the code of [SciViews-K](https://community.komodoide.com/packages/addons/sciviews-k/), and the code of [Tinn-R](https://nbcgib.uesc.br/tinnr/en/) for a Pascal version. Writing clients in C, Java, Python, etc. should not be difficult if you inspire you from these examples. Finally, there is another implementation of a similar R server through HTTP in the **svHttp** package.
+You can also access the {svSocket} server from another language. There is a very basic example written in Tcl in the `/etc` subdirectory of the {svSocket} package. See the `ReadMe.txt` file there. The Tcl script `SimpleClient.tcl` implements a Tcl client in a few dozens of code lines. For other examples, you can inspect the code of [SciViews-K](https://community.komodoide.com/packages/addons/sciviews-k/), and the code of [Tinn-R](https://nbcgib.uesc.br/tinnr/en/) for a Pascal version. Writing clients in C, Java, Python, etc. should not be difficult if you inspire you from these examples. Finally, there is another implementation of a similar R server through HTTP in the {svHttp} package.

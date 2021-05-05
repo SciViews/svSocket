@@ -40,13 +40,15 @@
 #' one parameter. Note that you can set or change many parameters at once.
 #'
 #' Currently, parameters are:
-#' - `bare = TRUE|FALSE` for "bare" mode (no prompt, no echo, no multiline; by default, `bare = TRUE`),
+#' - `bare = TRUE|FALSE` for "bare" mode (no prompt, no echo, no multiline; by
+#' default, `bare = TRUE`),
 #' - `multiline = TRUE|FALSE`: does the server accept code spread on multiple
 #' lines and send in several steps (by default, yes, but works only if
 #' `bare = FALSE`.
 #' - `echo = TRUE|FALSE` is the command echoed to the regular R console (by
 #' default `echo = FALSE`).
-#' - `last = ""` string to append to each output (for instance to indicate that processing is done),
+#' - `last = ""` string to append to each output (for instance to indicate that
+#' processing is done),
 #' - `prompt = "> "`, the prompt to use (if not in bare mode) and
 #' - `continue = "+ "` the continuation prompt to use, when multiline mode is
 #' active. You can only cancel a multiline mode by completing the R code you are

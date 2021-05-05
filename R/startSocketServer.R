@@ -191,7 +191,7 @@ procfun = processSocket, secure = FALSE, local = !secure) {
   }
 
   # Copy procfun into SciViews:TempEnv as SocketServerProc_<port>
-  assign(paste("SocketServerProc", port, sep ="_"), procfun, envir = TempEnv())
+  assign(paste("SocketServerProc", port, sep = "_"), procfun, envir = TempEnv())
 
   # Create the Tcl function that retrieves data from the socket
   # (command send by the client), call the processing R function

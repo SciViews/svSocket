@@ -50,7 +50,9 @@ client currently connected.
 }
 \description{
 A 'sockclientconn' object is created that opens a connection from R to a
-SciViews socket client (that must be currently connected).
+SciViews socket client (that must be currently connected). A timeout is
+defined by \code{options(timeout = XX)} where \code{XX} is a number of seconds. In R,
+its default value is 60 sec.
 }
 \seealso{
 \code{\link[=socketConnection]{socketConnection()}}, \code{\link[=sendSocketClients]{sendSocketClients()}}

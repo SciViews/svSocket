@@ -1,3 +1,7 @@
+# svSocket 1.0.2
+
+- Vignette reworked. Now it does not create a socket server on R CMD check.
+
 # svSocket 1.0.1
 
 - The Tcl client example in /etc now uses /usr/bin/tclsh.

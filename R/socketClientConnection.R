@@ -1,7 +1,9 @@
 #' Open a connection to a SciViews socket client for write access
 #'
 #' A 'sockclientconn' object is created that opens a connection from R to a
-#' SciViews socket client (that must be currently connected).
+#' SciViews socket client (that must be currently connected). A timeout is
+#' defined by `options(timeout = XX)` where `XX` is a number of seconds. In R,
+#' its default value is 60 sec.
 #'
 #' @param client the client identification. By default, it is the socket
 #' identifier as it appears in [getSocketClients()]. The client must be
@@ -56,6 +58,7 @@ blocking = FALSE, open = "a", encoding = getOption("encoding")) {
   # That's OK, we could proceed in opening a socketConnection and redirect it
   # to the client's socket...
 #  currSocks <- getSocketClientsNames(portnum)
+  # Note: timeout is taken from getOption("timeout"), 60 sec by default
   sck <- socketConnection(host = "127.0.0.1", port = portnum, server = FALSE,
     blocking = blocking, open = open, encoding = encoding)
   # We need to leave enough time in the background to Tcl to establish the
