@@ -77,7 +77,7 @@ command send by the client) and it must return a character string containing
 the result of the computation.
 }
 \seealso{
-\code{\link[=process_socket_server]{process_socket_server()}}, \code{\link[=send_socket_clients]{send_socket_clients()}}, \code{\link[svHttp:start_http_server]{svHttp::startHttpServer()}}
+\code{\link[=process_socket_server]{process_socket_server()}}, \code{\link[=send_socket_clients]{send_socket_clients()}}
 }
 \concept{stateful socket server interprocess communication}
 \keyword{IO}

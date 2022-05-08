@@ -44,7 +44,7 @@
 #' the result of the computation.
 #'
 #' @export
-#' @seealso [process_socket_server()], [send_socket_clients()], [svHttp::startHttpServer()]
+#' @seealso [process_socket_server()], [send_socket_clients()]
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
 start_socket_server <- function(port = 8888, server_name = "Rserver",
