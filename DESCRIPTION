@@ -1,9 +1,9 @@
 Package: svSocket
 Type: Package
-Version: 1.0.2
-Date: 2021-05-05
+Version: 1.1.0
+Date: 2022-05-04
 Title: 'SciViews' - Socket Server
-Description: Implements a socket server allowing to connect clients to R.
+Description: A socket server allows to connect clients to R.
 Authors@R: c(person("Philippe", "Grosjean", role = c("aut", "cre"),
   email = "phgrosjean@sciviews.org",
   comment = c(ORCID = "0000-0002-2694-9471")),
@@ -17,7 +17,7 @@ License: GPL-2
 URL: https://github.com/SciViews/svSocket, https://www.sciviews.org/svSocket/
 BugReports: https://github.com/SciViews/svSocket/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en-US

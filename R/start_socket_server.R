@@ -8,9 +8,9 @@
 #' processing socket clients requests.
 #'
 #' @param port the TCP port of the R socket server.
-#' @param server.name the internal name of this server.
+#' @param server_name the internal name of this server.
 #' @param procfun the function to use to process client's commands. By default,
-#' it is `processSocket()`.
+#' it is `process_socket_server()`.
 #' @param secure do we start a secure (TLS) server? (not implemented yet)
 #' @param local if `TRUE`, accept only connections from local clients, i.e.,
 #' from clients with IP address 127.0.0.1. Set by default if the server is not
@@ -44,15 +44,15 @@
 #' the result of the computation.
 #'
 #' @export
-#' @seealso [processSocket()], [sendSocketClients()], [svHttp::startHttpServer()]
+#' @seealso [process_socket_server()], [send_socket_clients()], [svHttp::startHttpServer()]
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
-startSocketServer <- function(port = 8888, server.name = "Rserver",
-procfun = processSocket, secure = FALSE, local = !secure) {
+start_socket_server <- function(port = 8888, server_name = "Rserver",
+procfun = process_socket_server, secure = FALSE, local = !secure) {
   # OK, could be port = 80 to emulate a simple HTML server
   # This is the main function that starts the server
   # This function implements a basic R socket server on 'port'
-  # SocketServerProc is the R workhorse function that do the computation
+  # socket_server_proc is the R workhorse function that do the computation
   # The server is written in Tcl. This way it is not blocking R command-line!
   # It is designed in a way that R can open simultaneously several ports and
   # accept connection from multiple clients to each of them.
@@ -70,7 +70,7 @@ procfun = processSocket, secure = FALSE, local = !secure) {
   if (!is.function(procfun))
     stop("'procfun' must be a function!")
 
-  # Note: the data send by the client is in the Tcl $::sockMsg variable
+  # Note: the data send by the client is in the Tcl $::sock_msg variable
   # Could a clash happen here if multiple clients send data at the
   # same time to the R socket server???
   if (!is.numeric(port[1]) || port[1] < 1)
@@ -78,12 +78,12 @@ procfun = processSocket, secure = FALSE, local = !secure) {
   portnum <- round(port[1])
   port <- as.character(portnum)
 
-  if (!is.character(server.name))
-    stop("'server.name' must be a string!")
-  server.name <- as.character(server.name)[1]
+  if (!is.character(server_name))
+    stop("'server_name' must be a string!")
+  server_name <- as.character(server_name)[1]
 
   # Check if the port is not open yet
-  servers <- getSocketServers()
+  servers <- get_socket_servers()
   if (port %in% servers)
     return(TRUE)  # This port is already open!
 
@@ -93,73 +93,71 @@ procfun = processSocket, secure = FALSE, local = !secure) {
     length(as.character(tcl("info", "commands", proc))) == 1
   }
 
-  if (!tclProcExists("SocketServerProc")) {
+  if (!tclProcExists("socket_server_proc")) {
     # Create the callback when a client sends data
-    SocketServerFun <- function() {
+    socket_server_fun <- function() {
       # Note: I don't know how to pass arguments here.
       # So, I use Tcl global variables instead:
-      # - the server port from $::sockPort,
-      # - the socket client from $::sockClient,
-      # - and the message from $::sockMsg
+      # - the server port from $::sock_port,
+      # - the socket client from $::sock_client,
+      # - and the message from $::sock_msg
       tclGetValue_ <- function(name) {
         # Get the value stored in a plain Tcl variable
         if (!is.character(name))
           stop("'name' must be a character!")
 
         # Create a temporary dual variable with tclVar()
-        Temp <- tclVar(init = "")
+        temp <- tclVar(init = "")
 
         # Copy the content of the var of interest to it
-        .Tcl(paste("catch {set ", as.character(Temp), " $", name, "}",
-          sep = ""))
+        .Tcl(paste0("catch {set ", as.character(temp), " $", name, "}"))
 
         # Get the content of the temporary variable
-        Res <- tclvalue(Temp) # Temp is destroyed when function exists
-        Res
+        tclvalue(temp) # temp is destroyed when function exists
       }
 
-      TempEnv_ <- function() {
+      temp_env_ <- function() {
         pos <-  match("SciViews:TempEnv", search())
         if (is.na(pos)) {# Must create it
           `SciViews:TempEnv` <- list()
-          Attach <- function(...)
+          attach_ <- function(...)
             get("attach", mode = "function")(...)
-          Attach(`SciViews:TempEnv`, pos = length(search()) - 1)
+          attach_(`SciViews:TempEnv`, pos = length(search()) - 1)
           rm(`SciViews:TempEnv`)
           pos <- match("SciViews:TempEnv", search())
         }
         pos.to.env(pos)
       }
 
-      getTemp_ <- function(x, default = NULL, mode = "any") {
-        if (exists(x, envir = TempEnv_(), mode = mode, inherits = FALSE)) {
-          return(get(x, envir = TempEnv_(), mode = mode, inherits = FALSE))
+      get_temp_ <- function(x, default = NULL, mode = "any") {
+        if (exists(x, envir = temp_env_(), mode = mode, inherits = FALSE)) {
+          return(get(x, envir = temp_env_(), mode = mode, inherits = FALSE))
         } else {# Variable not found, return the default value
           return(default)
         }
       }
 
       process <- function() {
-        port <- tclGetValue_("::sockPort")
+        port <- tclGetValue_("::sock_port")
         if (port == "")
           return(FALSE)  # The server is closed
-        client <- tclGetValue_("::sockClient")
+        client <- tclGetValue_("::sock_client")
         if (client == "")
           return(FALSE)  # The socket client is unknown!
-        msg <- tclGetValue_("::sockMsg")
+        msg <- tclGetValue_("::sock_msg")
         if (msg == "")
           return(FALSE)  # No message!
 
         # Make sure this message is not processed twice
-        .Tcl("set ::sockMsg {}")
+        .Tcl("set ::sock_msg {}")
 
         # Do we have to debug socket transactions
         Debug <- isTRUE(getOption("debug.Socket"))
         if (Debug)
           cat(client, " > ", port, ": ", msg, "\n", sep = "")
 
-        # Function to process the client request: SocketServerProc_<port>
-        proc <- getTemp_(paste("SocketServerProc", port, sep = "_"),
+        # Function to process the client request: socket_server_proc_<port>
+        proc <- get_temp_(paste("socket_server_proc", port, sep = "_"),
           mode = "function")
         if (is.null(proc) || !is.function(proc))
           return(FALSE)  # The server should be closed
@@ -167,7 +165,7 @@ procfun = processSocket, secure = FALSE, local = !secure) {
         res <- proc(msg, client, port)
         # Return result to the client
         if (res != "") {
-          if (Debug)
+          if (isTRUE(Debug))
             cat(port, " > ", client, ": ", res, "\n", sep = "")
           chk <- try(tcl("puts", client, res), silent = TRUE)
           if (inherits(chk, "try-error")) {
@@ -179,24 +177,25 @@ procfun = processSocket, secure = FALSE, local = !secure) {
       }
       return(process)  # Create the closure function for .Tcl.callback()
     }
-    assignTemp("SocketServerProc", SocketServerFun())
+    assign_temp("socket_server_proc", socket_server_fun())
     # Create a Tcl proc that calls this function back
-    res <- .Tcl.callback(getTemp("SocketServerProc"), TempEnv())
+    res <- .Tcl.callback(get_temp("socket_server_proc"), temp_env())
     if (length(grep("R_call ", res) > 0)) {
       # Create a proc with the same name in Tcl
-      .Tcl(paste("proc SocketServerProc {} {", res, "}", sep = ""))
+      .Tcl(paste("proc socket_server_proc {} {", res, "}", sep = ""))
     } else {
       stop("Cannot create the SciViews socket server callback function")
     }
   }
 
-  # Copy procfun into SciViews:TempEnv as SocketServerProc_<port>
-  assign(paste("SocketServerProc", port, sep = "_"), procfun, envir = TempEnv())
+  # Copy procfun into SciViews:TempEnv as socket_server_proc_<port>
+  assign(paste("socket_server_proc", port, sep = "_"), procfun,
+    envir = temp_env())
 
   # Create the Tcl function that retrieves data from the socket
   # (command send by the client), call the processing R function
   # and returns result to the client
-  cmd <- paste(c(paste("proc  sockHandler_", port, " {sock} {", sep = ""),
+  cmd <- paste(c(paste("proc  sock_handler_", port, " {sock} {", sep = ""),
     paste("global Rserver_", port, sep = ""),
     "if {[eof $sock] == 1 || [catch {gets $sock line}]} {",
     "    # end of file or abnormal connection drop",
@@ -207,17 +206,17 @@ procfun = processSocket, secure = FALSE, local = !secure) {
     "} else {",
     "    # Do we have to redirect the connection?",
     "    if {[string compare \">>>>>>sock\" [string range $line 0 9]] == 0} {",
-    "        set redirSock [string range $line 6 12]",
-    "        fileevent $sock readable [list sockRedirect $sock $redirSock]",
+    "        set redir_sock [string range $line 6 12]",
+    "        fileevent $sock readable [list sock_redirect $sock $redir_sock]",
     paste("        unset Rserver_", port, "($sock)", sep = ""),
     "    } else {",
-    "        global sockPort",
-    "        global sockClient",
-    "        global sockMsg",
-    paste("        set ::sockPort", port),
-    "        set ::sockClient $sock",
-    "        set ::sockMsg $line",
-    "        SocketServerProc    ;# process the command in R",
+    "        global sock_port",
+    "        global sock_client",
+    "        global sock_msg",
+    paste("        set ::sock_port", port),
+    "        set ::sock_client $sock",
+    "        set ::sock_msg $line",
+    "        socket_server_proc    ;# process the command in R",
     "}\n}\n}"),
     collapse = "\n")
   # if {[gets $sock line] < 0} {return} # To handle incomplete lines!
@@ -227,7 +226,7 @@ procfun = processSocket, secure = FALSE, local = !secure) {
   # (a different one for each server port)
   # Code is slightly different if the server is only local or not
   if (isTRUE(local)) {
-    cmd <- paste(c(paste("proc sockAccept_", port, " {sock addr port} {",
+    cmd <- paste(c(paste("proc sock_accept_", port, " {sock addr port} {",
       sep = ""),
       paste("global Rserver_", port, sep = ""),
       "# Configure the socket",
@@ -239,25 +238,25 @@ procfun = processSocket, secure = FALSE, local = !secure) {
       "    return",
       "}",
       paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
-      paste("fileevent $sock readable [list sockHandler_", port,
+      paste("fileevent $sock readable [list sock_handler_", port,
         " $sock] }", sep = "")),
     collapse = "\n")
   } else {
-    cmd <- paste(c(paste("proc sockAccept_", port, " {sock addr port} {",
+    cmd <- paste(c(paste("proc sock_accept_", port, " {sock addr port} {",
       sep = ""),
       paste("global Rserver_", port, sep = ""),
       "# Configure the socket",
       "fconfigure $sock -buffering line -blocking 0",
       paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
-      paste("fileevent $sock readable [list sockHandler_", port,
+      paste("fileevent $sock readable [list sock_handler_", port,
         " $sock] }", sep = "")),
     collapse = "\n")
   }
   .Tcl(cmd)
 
-  # Create a Tcl procedure to redirect output (used in socketClientConnection())
-  if (!tclProcExists("sockRedirect")) {
-    cmd <- paste(c("proc sockRedirect {sock tosock} {",
+  # Create a Tcl procedure to redirect output used in socket_client_connection()
+  if (!tclProcExists("sock_redirect")) {
+    cmd <- paste(c("proc sock_redirect {sock tosock} {",
       "if {[eof $sock] == 1 || [catch {gets $sock line}]} {",
       "    # end of file or abnormal connection drop",
       "    fileevent $sock readable {}",
@@ -272,7 +271,7 @@ procfun = processSocket, secure = FALSE, local = !secure) {
   # Create the socket server itself in Tcl (a different one for each port)
   # If we want a secure server, use the tls secured socket instead
   if (isTRUE(secure)) {
-    .Tcl(paste("set Rserver_", port, "(main) [tls::socket -server sockAccept_",
+    .Tcl(paste("set Rserver_", port, "(main) [tls::socket -server sock_accept_",
       #port, " -require 1 -cafile caPublic.pem -certfile ~/serverR.pem ",
       port, " -certfile Rserver.pem -keyfile Rserver.pem -ssl2 1 -ssl3 1 -tls1 0 -require 0 -request 0 ",
       port, "]", sep = ""))
@@ -285,18 +284,23 @@ procfun = processSocket, secure = FALSE, local = !secure) {
       # openssl req -new -x509 -key serverR.pem -out clientR.pem -days 365 -config openssl.cnf
       # ... and answer to a couple of questions
   } else {
-    .Tcl(paste("set Rserver_", port, "(main) [socket -server sockAccept_",
+    .Tcl(paste("set Rserver_", port, "(main) [socket -server sock_accept_",
       port, " ", port, "]", sep = ""))
   }
 
-  # Add this port in the variable 'SocketServers' in Sciviews:TempEnv
-  socks <- getSocketServers()
+  # Add this port in the variable 'Socket_servers' in SciViews:TempEnv
+  socks <- get_socket_servers()
   namesocks <- names(socks)
   if (!(portnum %in% socks)) {
     socks <- c(socks, portnum)
-    names(socks) <- c(namesocks, server.name)
+    names(socks) <- c(namesocks, server_name)
     socks <- sort(socks)
-    assign("SocketServers", socks, envir = TempEnv())
+    assign("socket_servers", socks, envir = temp_env())
   }
   return(TRUE)  # Humm! Only if it succeeds...
 }
+
+# Old name of the function
+#' @export
+#' @rdname start_socket_server
+startSocketServer <- start_socket_server

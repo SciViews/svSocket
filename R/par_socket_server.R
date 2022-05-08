@@ -1,4 +1,4 @@
-#' Get or set parameters specific to Sciviews socket clients
+#' Get or set parameters specific to SciViews socket clients
 #'
 #' This function manage to persistently store sensible parameters for
 #' configuring communication between the server and the client, as well as, any
@@ -6,15 +6,15 @@
 #' disconnects and then reconnects to R, as long R was not restarted.
 #'
 #' @param client the client identification. By default, it is the socket
-#' identifier as it appears in [[getSocketClients()]. Since no attempt is made
+#' identifier as it appears in [get_socket_clients()]. Since no attempt is made
 #' to check if the client really exists and is connected, you can create fake
 #' ones, outside of the socket server, to test your code for instance.
-#' @param serverport the port on which the server is running, 8888 by default.
+#' @param server_port the port on which the server is running, 8888 by default.
 #' Not important for fake socket client configurations.
-#' @param clientsocket the Tcl name of the socket where the client is connected.
+#' @param client_socket the Tcl name of the socket where the client is connected.
 #' By default, it is the same as `client` name, but in case it was modified, do
-#' provide a correct `clientsocket` string if you want to be able to activate a
-#' redirection to it (see [socketClientConnection()]).
+#' provide a correct `client_socket` string if you want to be able to activate a
+#' redirection to it (see [socket_client_connection()]).
 #' @param ... the parameters you want to change as named arguments. Non named
 #' arguments are ignored with a warning. If you specify `arg = NULL`, the
 #' corresponding variable is deleted from the environment.
@@ -26,18 +26,21 @@
 #' @details
 #' You can assign the environment to a variable, and then, access its content
 #' like if it was a list (`e$var` or `e$var <- "new value"`). To get a list of
-#' the content, use `ls(parSocket(client, port))`, or
-#' `ls(parSocket(client, port), all.names = TRUE)`, but not
-#' `names(parSocket(client, port))`. As long as you keep a variable pointing on
-#' that environment alive, you have access to last values (i.e., changes done
-#' elsewhere are taken into account). If you want a frozen snapshot of the
-#' parameters, you should use `myvar <- as.list(parSocket(client, port)`.
+#' the content, use `ls(par_socket_server(client, port))`, or
+#' `ls(par_socket_server(client, port), all.names = TRUE)`, but not
+#' `names(par_socket_server(client, port))`. As long as you keep a variable
+#' pointing on that environment alive, you have access to last values (i.e.,
+#' changes done elsewhere are taken into account). If you want a frozen snapshot
+#' of the parameters, you should use
+#' `myvar <- as.list(par_socket_server(client, port)`.
 #'
 #' There is a convenient placeholder for code send by the client to insert
-#' automatically the right socket and serverport in `parSocket()`: `<<<s>>>`.
+#' automatically the right socket and server_port in
+#' `par_socket_server()`: `<<<s>>>`.
 #' Hence, code that the client send to access or change its environment is just
-#' `parSocket(<<<s>>>, bare = FALSE)` or `parSocket(<<<s>>>)$bare` to set or get
-#' one parameter. Note that you can set or change many parameters at once.
+#' `par_socket_server(<<<s>>>, bare = FALSE)` or
+#' `par_socket_server(<<<s>>>)$bare` to set or get one parameter. Note that you
+#' can set or change many parameters at once.
 #'
 #' Currently, parameters are:
 #' - `bare = TRUE|FALSE` for "bare" mode (no prompt, no echo, no multiline; by
@@ -90,58 +93,59 @@
 #' more than one line of code into it.
 #'
 #' @export
-#' @seealso [startSocketServer()], [sendSocketClients()], [getSocketClients()],
-#' [socketClientConnection()]
+#' @seealso [start_socket_server()], [send_socket_clients()], [get_socket_clients()],
+#' [socket_client_connection()]
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
 #'
 #' @examples
 #' # We use a fake socket client configuration environment
-#' e <- parSocket("fake")
+#' e <- par_socket_server("fake")
 #' # Look at what it contains
 #' ls(e)
 #' # Get one data
 #' e$bare
 #' # ... or
-#' parSocket("fake")$bare
+#' par_socket_server("fake")$bare
 #'
 #' # Change it
-#' parSocket("fake", bare = FALSE)$bare
+#' par_socket_server("fake", bare = FALSE)$bare
 #' # Note it is changed too for e
 #' e$bare
 #'
 #' # You can change it too with
 #' e$bare <- TRUE
 #' e$bare
-#' parSocket("fake")$bare
+#' par_socket_server("fake")$bare
 #'
 #' # Create a new entry
 #' e$foo <- "test"
 #' ls(e)
-#' parSocket("fake")$foo
+#' par_socket_server("fake")$foo
 #' # Now delete it
-#' parSocket("fake", foo = NULL)
+#' par_socket_server("fake", foo = NULL)
 #' ls(e)
 #'
 #' # Our fake socket config is in SciViews:TempEnv environment
 #' s <- search()
 #' l <- length(s)
 #' pos <- (1:l)[s == "SciViews:TempEnv"]
-#' ls(pos = pos)  # It is named 'SocketClient_fake'
+#' ls(pos = pos)  # It is named 'socket_client_fake'
 #' # Delete it
-#' rm(SocketClient_fake, pos = pos)
+#' rm(socket_client_fake, pos = pos)
 #' # Do some house keeping
 #' rm(list = c("s", "l", "pos"))
-parSocket <- function(client, serverport = 8888, clientsocket = client, ...) {
+par_socket_server <- function(client, server_port = 8888,
+client_socket = client, ...) {
   # Set or get parameters for a given socket client
   # No attempt is made to make sure this client exists
-  sc <- paste("SocketClient", client, sep = "_")
-  if (!exists(sc, envir = TempEnv(), inherits = FALSE, mode = "environment")) {
+  sc <- paste("socket_client", client, sep = "_")
+  if (!exists(sc, envir = temp_env(), inherits = FALSE, mode = "environment")) {
     # Create a new environment with default values
-    e <- new.env(parent = TempEnv())
+    e <- new.env(parent = temp_env())
     e$client <- client
-    e$clientsocket <- clientsocket
-    e$serverport <- serverport
+    e$client_socket <- client_socket
+    e$server_port <- server_port
     e$prompt <- ":> "    # Default prompt
     e$continue <- ":+ "  # Default continuation prompt
     e$code <- ""         # Current partial code for multiline mode
@@ -152,16 +156,16 @@ parSocket <- function(client, serverport = 8888, clientsocket = client, ...) {
     e$bare <- TRUE       # Always start in "bare" mode
     # Note: in bare mode, all other parameters are inactive!
     # Assign it to SciViews:TempEnv
-    assign(sc, e, envir = TempEnv())
+    assign(sc, e, envir = temp_env())
   } else {
-    e <- get(sc, envir = TempEnv(), mode = "environment")
+    e <- get(sc, envir = temp_env(), mode = "environment")
   }
   # Change or add parameters if they are provided
-  # There is no reason that serverport changes
-  # but if a client disconnects and reconnects, the clientsocket may be
+  # There is no reason that server_port changes
+  # but if a client disconnects and reconnects, the client_socket may be
   # different! But only change if it is sockXXX
-  if (grepl("^sock[0-9]+$", clientsocket))
-    e$clientsocket <- clientsocket
+  if (grepl("^sock[0-9]+$", client_socket))
+    e$client_socket <- client_socket
   args <- list(...)
   if (l <- length(args)) {
     change.par <- function(x, val, env) {
@@ -184,3 +188,8 @@ parSocket <- function(client, serverport = 8888, clientsocket = client, ...) {
 
   invisible(e)
 }
+
+# Old name of the function
+#' @export
+#' @rdname par_socket_server
+parSocket <- par_socket_server

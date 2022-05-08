@@ -2,25 +2,30 @@
 #'
 #' The socket servers asks to clients to nicely disconnect (possibly doing
 #' further process on their side). This function is used by
-#' [stopSocketServer()], but it can also be invoked manually to ask for
+#' [stop_socket_server()], but it can also be invoked manually to ask for
 #' disconnection of a particular client. Note that, in this case, the client
 #' still can decide not to disconnect! The code send to ask for client
 #' disconnection is: `\\f`.
 #'
 #' @param sockets the list of socket client names (sockXXX) to close, or `"all"`
 #' (by default) to disconnect all currently connected clients.
-#' @param serverport the corresponding R socket server port.
+#' @param server_port the corresponding R socket server port.
 #'
 #' @export
-#' @seealso [sendSocketClients()]
+#' @seealso [send_socket_clients()]
 #' @keywords IO
 #' @concept stateful socket server interprocess communication
-closeSocketClients <- function(sockets = "all", serverport = 8888) {
+close_socket_clients <- function(sockets = "all", server_port = 8888) {
   # Nicely close socket client(s) by sending "\f"
   # To be interpreted by a compatible client that manages to close connection
   if (sockets == "all")
-    sockets <- getSocketClientsNames(port = serverport)
+    sockets <- get_socket_clients_names(port = server_port)
   if (!is.null(sockets) && length(sockets) > 0)
     for (i in 1:length(sockets))
       tcl("puts", sockets[i], "\n\f")
 }
+
+# Old name of the function
+#' @export
+#' @rdname close_socket_clients
+closeSocketClients <- close_socket_clients

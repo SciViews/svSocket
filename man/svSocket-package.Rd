@@ -6,7 +6,7 @@
 \alias{svSocket-package}
 \title{svSocket: 'SciViews' - Socket Server}
 \description{
-Implements a socket server allowing to connect clients to R.
+A socket server allows to connect clients to R.
 }
 \details{
 The SciViews {svSocket} package provides a stateful, multi-client and
@@ -27,15 +27,15 @@ run R in non-interactive mode.
 
 Although initially designed to server GUI clients, the R socket server can
 also be used to exchange data between separate R processes. The
-\code{\link[=evalServer]{evalServer()}} function is particularly useful for this. Note, however, that
-R objects are serialized into a text (i.e., using \code{\link[=dump]{dump()}}) format,
-currently. It means that the transfer of large object is not as efficient as,
-say {Rserver} ({Rserver} exchanges R objects in binary format, but {Rserver}
-is not stateful, clients do not share the same global workspace and it does
-not allow concurrent use of the command prompt).
+\code{\link[=eval_socket_server]{eval_socket_server()}} function is particularly useful for this. Note,
+however, that R objects are serialized into a text (i.e., using \code{\link[=dump]{dump()}})
+format, currently. It means that the transfer of large object is not as
+efficient as, say {Rserver} ({Rserver} exchanges R objects in binary format,
+but {Rserver} is not stateful, clients do not share the same global workspace
+and it does not allow concurrent use of the command prompt).
 
-See \code{\link[=startSocketServer]{startSocketServer()}} and \code{\link[=processSocket]{processSocket()}} for further implementation
-details.
+See \code{\link[=start_socket_server]{start_socket_server()}} and \code{\link[=process_socket_server]{process_socket_server()}} for further
+implementation details.
 }
 \seealso{
 Useful links:

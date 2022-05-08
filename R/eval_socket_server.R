@@ -23,7 +23,7 @@
 #' it on the server side to make sure you send just the part that is
 #' transferable between the two R processes.
 #'
-#' @seealso [sendSocketClients()]
+#' @seealso [send_socket_clients()]
 #' @author Matthew Dowle
 #' @export
 #' @keywords IO utilities
@@ -33,7 +33,7 @@
 #' \dontrun{
 #' # Start an R process and make it a server
 #' library(svSocket)
-#' startSocketServer()
+#' start_socket_server()
 #'
 #' # Start a second R process and run this code in it (the R client):
 #' library(svSocket)
@@ -43,34 +43,34 @@
 #'
 #' L <- 10:20
 #' L
-#' evalServer(con, L)             # L is not an the server, hence the error
-#' evalServer(con, L, L)          # Send it to the server
-#' evalServer(con, L)             # Now it is there
-#' evalServer(con, L, L + 2)
+#' eval_socket_server(con, L)             # L is not an the server, hence the error
+#' eval_socket_server(con, L, L)          # Send it to the server
+#' eval_socket_server(con, L)             # Now it is there
+#' eval_socket_server(con, L, L + 2)
 #' L
-#' evalServer(con, L)
+#' eval_socket_server(con, L)
 #'
 #' # More examples
-#' evalServer(con, "x <- 42")     # Set x
-#' evalServer(con, "y <- 10")     # Set y
-#' evalServer(con, x + y)         # Quotes not needed
-#' evalServer(con, "x + y")       # but you can put quotes if you like
-#' evalServer(con, x)             # Same as get x
-#' evalServer(con, "x + Y")       # Return server side-error to the client
-#' evalServer(con, x)             # Keep working after an error
-#' evalServer(con, "x <- 'a'")    # Embedded quotes are OK
+#' eval_socket_server(con, "x <- 42")     # Set x
+#' eval_socket_server(con, "y <- 10")     # Set y
+#' eval_socket_server(con, x + y)         # Quotes not needed
+#' eval_socket_server(con, "x + y")       # but you can put quotes if you like
+#' eval_socket_server(con, x)             # Same as get x
+#' eval_socket_server(con, "x + Y")       # Return server side-error to the client
+#' eval_socket_server(con, x)             # Keep working after an error
+#' eval_socket_server(con, "x <- 'a'")    # Embedded quotes are OK
 #'
 #' # Examples of sending data
-#' evalServer(con, X, -42)        # Alternative way to assign to X
-#' evalServer(con, Y, 1:10)
-#' evalServer(con, X + Y)
+#' eval_socket_server(con, X, -42)        # Alternative way to assign to X
+#' eval_socket_server(con, Y, 1:10)
+#' eval_socket_server(con, X + Y)
 #' X  # Generates an error, X is not here in the client, only on the server
-#' evalServer(con, X)
-#' evalServer(con, "Z <- X + 3")  # Send an assignment to execute remotely
-#' evalServer(con, X + Z)
-#' evalServer(con, "Z <- X + 1:1000; NULL")   # Same but do not return Z
-#' evalServer(con, length(Z))
-#' Z <- evalServer(con, Z)        # Bring it back to client
+#' eval_socket_server(con, X)
+#' eval_socket_server(con, "Z <- X + 3")  # Send an assignment to execute remotely
+#' eval_socket_server(con, X + Z)
+#' eval_socket_server(con, "Z <- X + 1:1000; NULL")   # Same but do not return Z
+#' eval_socket_server(con, length(Z))
+#' Z <- eval_socket_server(con, Z)        # Bring it back to client
 #' Z
 #'
 #' # Close connection with the R socket server
@@ -86,9 +86,9 @@
 #' Z
 #'
 #' # Stop the socket server
-#' stopSocketServer()
+#' stop_socket_server()
 #' }
-evalServer <- function(con, expr, send = NULL) {
+eval_socket_server <- function(con, expr, send = NULL) {
   # Evaluate expr on the R server, and return its value
   # con as returned by socketConnection(port = 8888)
   # send is optional. If supplied, expr must be a single unquoted object name.
@@ -168,3 +168,8 @@ evalServer <- function(con, expr, send = NULL) {
   source(objcon, local = TRUE, echo = FALSE, verbose = FALSE)
   ..Last.value
 }
+
+# Old name of the function
+#' @export
+#' @rdname eval_socket_server
+evalServer <- eval_socket_server

@@ -5,14 +5,19 @@
 #' @return
 #' A character string vector, or `NULL` if no R socket server is currently
 #' running.
-#' @seealso [getSocketClients()], [getSocketServerName()], [startSocketServer]
+#' @seealso [get_socket_clients()], [get_socket_server_name()], [start_socket_server]
 #' @export
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
-getSocketServers <- function() {
+get_socket_servers <- function() {
   # Get the list of currently running socket servers
-  TempEnv()$SocketServers
+  temp_env()$socket_servers
 }
+
+# Old name of the function
+#' @export
+#' @rdname get_socket_servers
+getSocketServers <- get_socket_servers
 
 #' Get infos about socket clients
 #'
@@ -22,7 +27,7 @@ getSocketServers <- function() {
 #' @param port the port of the R socket server.
 #'
 #' @return
-#' [getSocketClients()] returns a vector of character string with the address of
+#' [get_socket_clients()] returns a vector of character string with the address of
 #' clients in the form XXX.XXX.XXX.XXX:YYY where XXX.XXX.XXX.XXX is their ip
 #' address and YYY is their port. For security reasons, only localhost clients
 #' (on the same machine) can connect to the socket server. Thus, XXX.XXX.XXX.XXX
@@ -30,20 +35,20 @@ getSocketServers <- function() {
 #' in case of further extensions in the future. The name of these items equals
 #' the corresponding Tcl socket name.
 #'
-#' [getSocketClientsNames()] returns only a list of the socket client names.
+#' [get_socket_clients_names()] returns only a list of the socket client names.
 #'
 #' @export
-#' @seealso [getSocketServers()]
+#' @seealso [get_socket_servers()]
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
-getSocketClients <- function(port = 8888) {
+get_socket_clients <- function(port = 8888) {
   if (!is.numeric(port[1]) || port[1] < 1)
     stop("'port' must be a positive integer!")
   portnum <- round(port[1])
   port <- as.character(portnum)
 
   # Does a server exist on this port?
-  servers <- getSocketServers()
+  servers <- get_socket_servers()
   if (!(port %in% servers))
     return(NULL)  # If no R socket server running on this port
 
@@ -67,10 +72,20 @@ getSocketClients <- function(port = 8888) {
   addresses
 }
 
+# Old name of the function
 #' @export
-#' @rdname getSocketClients
-getSocketClientsNames <- function(port = 8888)
-  names(getSocketClients(port = port))
+#' @rdname get_socket_clients
+getSocketClients <- get_socket_clients
+
+#' @export
+#' @rdname get_socket_clients
+get_socket_clients_names <- function(port = 8888)
+  names(get_socket_clients(port = port))
+
+# Old name of the function
+#' @export
+#' @rdname get_socket_clients
+getSocketClientsNames <- get_socket_clients_names
 
 #' Get the name of a R socket server
 #'
@@ -80,21 +95,26 @@ getSocketClientsNames <- function(port = 8888)
 #'
 #' @return
 #' A string with the server name, or `NULL` if it does not exist.
-#' @seealso [getSocketServers()]
+#' @seealso [get_socket_servers()]
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
 #' @export
-getSocketServerName <- function(port = 8888) {
+get_socket_server_name <- function(port = 8888) {
   if (!is.numeric(port[1]) || port[1] < 1)
     stop("'port' must be a positive integer!")
   portnum <- round(port[1])
   port <- as.character(portnum)
 
   # Return the name of a given R socket server
-  servers <- getSocketServers()
+  servers <- get_socket_servers()
   if (!(port %in% servers))
     return(NULL)  # If no R socket server running on this port
 
-  ServerNames <- names(servers)
-  ServerNames[servers == port]
+  server_names <- names(servers)
+  server_names[servers == port]
 }
+
+# Old name of the function
+#' @export
+#' @rdname get_socket_clients
+getSocketServerName <- get_socket_server_name

@@ -5,12 +5,12 @@
 #' customized versions for particular R socket servers.
 #'
 #' @param msg the message send by the client, to be processed.
-#' @param socket the client socket identifier, as in [getSocketClients()]. This
-#' is passed by the calling function and can be used internally.
-#' @param serverport the port on which the server is running, this is passed by
+#' @param socket the client socket identifier, as in [get_socket_clients()].
+#' This is passed by the calling function and can be used internally.
+#' @param server_port the port on which the server is running, this is passed by
 #' the calling function and can be used internally.
-#' @param ... anything you want to pass to [processSocket()], but it needs to
-#' rework [startSocketServer()] to use it).
+#' @param ... anything you want to pass to [process_socket_server()], but it
+#' needs to rework [start_socket_server()] to use it).
 #'
 #' @return
 #' The results of processing `msg` in a character string vector.
@@ -53,13 +53,13 @@
 #'
 #' To debug the R socket server and inspect how commands send by a client are
 #' interpreted by this function, use `options(debug.Socket = TRUE)`. This
-#' function uses [svMisc::parseText()] and [svMisc::captureAll()] in order to
+#' function uses [svMisc::parse_text()] and [svMisc::capture_all()] in order to
 #' evaluate R code in character string almost exactly the same way as if it was
 #' typed at the command line of a R console.
 #'
 #' @export
-#' @seealso [startSocketServer()], [sendSocketClients()], [parSocket()],
-#' [svMisc::parseText()], [svMisc::captureAll()]
+#' @seealso [start_socket_server()], [send_socket_clients()],
+#' [par_socket_server()], [svMisc::parse_text()], [svMisc::capture_all()]
 #' @keywords IO utilities
 #' @concept stateful socket server interprocess communication
 #'
@@ -67,17 +67,17 @@
 #' \dontrun{
 #' # A simple REPL (R eval/process loop) using basic features of processSocket()
 #' repl <- function() {
-#'   pars <- parSocket("repl", "", bare = FALSE)  # Parameterize the loop
+#'   pars <- par_socket_server("repl", "", bare = FALSE)  # Parameterize the loop
 #'   cat("Enter R code, hit <CTRL-C> or <ESC> to exit\n> ")   # First prompt
 #'   repeat {
 #'     entry <- readLines(n = 1) 				 # Read a line of entry
 #'     if (entry == "") entry <- "<<<esc>>>"    # Exit from multiline mode
-#'     cat(processSocket(entry, "repl", ""))    # Process the entry
+#'     cat(process_socket_server(entry, "repl", ""))    # Process the entry
 #'   }
 #' }
 #' repl()
 #' }
-processSocket <- function(msg, socket, serverport, ...) {
+process_socket_server <- function(msg, socket, server_port, ...) {
   # This is the default R function that processes a command send by a socket
   # client. 'msg' is assumed to be R code contained in a string
 
@@ -92,7 +92,7 @@ processSocket <- function(msg, socket, serverport, ...) {
   # HTTP/1.1 200 OK
   # Server: R socket server
   # Connection: close
-  # Content-type: text/palin;charset=UTF-8
+  # Content-type: text/plain;charset=UTF-8
   # (followed by an empty line)
   # Get does the same, but process the R command and returns processed results
   # in the body, i.e, after the empty line
@@ -115,14 +115,14 @@ processSocket <- function(msg, socket, serverport, ...) {
     # Replace <<<n>>> by \n (for multiline code)
     code <- gsub("<<<n>>>", "\n", code)
     # Replace <<<s>>> by the corresponding client id and server port
-    code <- gsub("<<<s>>>", paste('"', client, '", ', serverport, sep = ""),
+    code <- gsub("<<<s>>>", paste('"', client, '", ', server_port, sep = ""),
       code)
     # We ignore and eliminate the other <<<xxx>>> sequences
     code <- gsub("<<<[^>]+>>>", "", code)
 
     # Parse and execute this code
-    expr <- parseText(code)
-    results <- try(captureAll(expr, echo = FALSE, split = FALSE),
+    expr <- parse_text(code)
+    results <- try(capture_all(expr, echo = FALSE, split = FALSE),
       silent = TRUE)
 
     # Make sure to return something different than "" (this is used to
@@ -153,7 +153,8 @@ processSocket <- function(msg, socket, serverport, ...) {
   # Do we receive <<<esc>>>? => break (currently, only break multiline mode)
   if (substr(msg, 1, 9) == "<<<esc>>>") {
     # Reset multiline code and update clientsocket
-    pars <- parSocket(client, serverport, clientsocket = socket, code = "")
+    pars <- par_socket_server(client, server_port, client_socket = socket,
+      code = "")
     msg <- substr(msg, 10, 1000000)
   }
 
@@ -161,10 +162,10 @@ processSocket <- function(msg, socket, serverport, ...) {
   msg <- gsub("<<<n>>>", "\n", msg)
 
   # Replace <<<s>>> by the corresponding client identifier and server port
-  msg <- gsub("<<<s>>>", paste('"', client, '", ', serverport, sep = ""), msg)
+  msg <- gsub("<<<s>>>", paste('"', client, '", ', server_port, sep = ""), msg)
 
-  hiddenMode <- FALSE
-  returnResults <- TRUE
+  hidden_mode <- FALSE
+  return_results <- TRUE
   # If msg starts with <<<Q>>> or <<<q>>>, then disconnect server before or
   # after evaluation of the command, respectively
   # If msg starts with <<<e>>>, evaluate command in the console and disconnect
@@ -173,16 +174,17 @@ processSocket <- function(msg, socket, serverport, ...) {
   if (startmsg == "<<<Q>>>") {
     msg <- substr(msg, 8, 1000000)
     # Indicate to the client that he can disconnect now
-    closeSocketClients(sockets = socket, serverport = serverport)
-    returnResults <- FALSE
+    close_socket_clients(sockets = socket, server_port = server_port)
+    return_results <- FALSE
   } else if (startmsg == "<<<q>>>") {
     msg <- substr(msg, 8, 1000000)
     # Remember to indicate disconnection at the end
-    parSocket(client, serverport, clientsocket = socket, last = "\n\f")
+    par_socket_server(client, server_port, client_socket = socket,
+      last = "\n\f")
   } else if (startmsg == "<<<e>>>") {
     msg <- substr(msg, 8, 1000000)
     # We just configure the server correctly
-    parSocket(client, serverport, clientsocket = socket, bare = FALSE,
+    par_socket_server(client, server_port, client_socket = socket, bare = FALSE,
       echo = TRUE, prompt = ":> ", continue = ":+ ", multiline = TRUE,
       last = "\n\f")
     # Add a command to the command history
@@ -190,27 +192,27 @@ processSocket <- function(msg, socket, serverport, ...) {
   } else if (startmsg == "<<<h>>>") {
     msg <- substr(msg, 8, 1000000)
     # Do not echo command on the server (silent execution)
-    hiddenMode <- TRUE
-    parSocket(client, serverport, clientsocket = socket, bare = TRUE,
+    hidden_mode <- TRUE
+    par_socket_server(client, server_port, client_socket = socket, bare = TRUE,
     last = "\n\f")
   } else if (startmsg == "<<<H>>>") {
     msg <- substr(msg, 8, 1000000)
     # Do not echo command on the server (silent execution with no return)
-    closeSocketClients(sockets = socket, serverport = serverport)
-    hiddenMode <- TRUE
-    returnResults <- FALSE
-    parSocket(client, serverport, clientsocket = socket, bare = TRUE)
+    close_socket_clients(sockets = socket, server_port = server_port)
+    hidden_mode <- TRUE
+    return_results <- FALSE
+    par_socket_server(client, server_port, client_socket = socket, bare = TRUE)
   } else if (startmsg == "<<<u>>>") {
     msg <- substr(msg, 8, 1000000)
     # Silent execution, nothing is returned to the client
     # (but still echoed to the server)
-    hiddenMode <- FALSE
-    returnResults <- FALSE
-    parSocket(client, serverport, clientsocket = socket, bare = TRUE)
+    hidden_mode <- FALSE
+    return_results <- FALSE
+    par_socket_server(client, server_port, client_socket = socket, bare = TRUE)
   }
 
   # Get parameters for the client
-  pars <- parSocket(client, serverport)
+  pars <- par_socket_server(client, server_port)
   if (Bare <- pars$bare) {
     Prompt <- ""
     Continue <- ""
@@ -220,7 +222,7 @@ processSocket <- function(msg, socket, serverport, ...) {
     Continue <- pars$continue
     Echo <- pars$echo
   }
-  if (!hiddenMode) {
+  if (!hidden_mode) {
     if (Echo) {
       # Note: command lines are now echoed directly in captureAll()
       # => no need of this any more!
@@ -234,7 +236,7 @@ processSocket <- function(msg, socket, serverport, ...) {
   }
 
   # Parse the R code
-  expr <- parseText(msg)
+  expr <- parse_text(msg)
   # Is it a wrong code?
   if (inherits(expr, "try-error")) {
     res <- paste(ngettext(1, "Error: ", "", domain = "R"),
@@ -249,7 +251,7 @@ processSocket <- function(msg, socket, serverport, ...) {
     # Is multiline mode allowed?
     if (!Bare && pars$multiline) {
       pars$code <- msg
-      if (returnResults) {
+      if (return_results) {
 #       return(enc2utf8(paste(pars$last, Continue, sep = "")))
         return(paste(pars$last, Continue, sep = ""))
       } else {
@@ -260,7 +262,7 @@ processSocket <- function(msg, socket, serverport, ...) {
         "\n", sep = "")
       if (Echo)
         cat(res)
-      if (returnResults) {
+      if (return_results) {
 #       return(enc2utf8(paste(res, pars$last, Prompt, sep = "")))
         return(paste(res, pars$last, Prompt, sep = ""))
       } else {
@@ -278,23 +280,28 @@ processSocket <- function(msg, socket, serverport, ...) {
   # Correct code,... we evaluate it
   # Something like this should allow for real-time echo in client,
   # but it is too slow and it outputs all results at the end...
-  #results <- captureAll(expr, split = Echo,
-  #  file = socketClientConnection(socket))
-  results <- captureAll(expr, echo = Echo, split = Echo)
+  #results <- capture_all(expr, split = Echo,
+  #  file = socket_client_connection(socket))
+  results <- capture_all(expr, echo = Echo, split = Echo)
   # Should we run taskCallbacks?
   # Note: these are installed in svKomodo package
-  if (!hiddenMode) {
-    h <- getTemp(".svTaskCallbackManager", default = NULL, mode = "list")
+  if (!hidden_mode) {
+    h <- get_temp(".svTaskCallbackManager", default = NULL, mode = "list")
     if (!is.null(h))
       h$evaluate()
   }
   # Collapse and add last and the prompt at the end
   results <- paste(results, collapse = "\n")
   #if (Echo) cat(results)
-  if (!returnResults)
+  if (!return_results)
     return("")
   Prompt <- if (pars$bare) "" else pars$prompt
   results <- paste(results, pars$last, Prompt, sep = "")
 # return(enc2utf8(results))
   results
 }
+
+# Old name of the function
+#' @export
+#' @rdname process_socket_server
+processSocket <- process_socket_server

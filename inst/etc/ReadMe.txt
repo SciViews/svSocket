@@ -7,7 +7,7 @@ Launch R and start a R socket server:
 > library(svSocket)
 Loading required package: tcltk
 Loading Tcl/Tk interface ... done
-> startSocketServer()
+> start_socket_server()
 [1] TRUE
 
 Then launch the client in a console window navigate to the /etc subdirectory
@@ -25,12 +25,12 @@ by typing them in the client or pasting them one by one.
 To get something closer to a real console, you should display the prompt and
 enable multiline mode. You achieve this by configuring the client with:
 
-parSocket(<<<s>>>, bare = FALSE)
+par_socket_server(<<<s>>>, bare = FALSE)
 
 Experiment various R code in this console. Also, you can turn echo on/off of
 your commands and the output to the regular R console with:
 
-parSocket(<<<s>>>, echo = TRUE)
+par_socket_server(<<<s>>>, echo = TRUE)
 
 You can connect simultaneously as many clients as you like, but you can only
 connect local clients for the moment. This is a restriction very easy to
@@ -43,7 +43,7 @@ installed on the server side. Then, in an R pocess, run:
 > library(svSocket)
 Loading required package: tcltk
 Loading Tcl/Tk interface ... done
-> startSocketServer(secure = TRUE)
+> start_socket_server(secure = TRUE)
 [1] TRUE
 
 Then, you can connect from a separate console to this secure server using the
@@ -53,14 +53,14 @@ $ cd [your_path_here]/library/svSocket/etc/
 $ tclsh SimpleClientSecure.tcl
 
 You have also another prototype client for Mozilla applications (Firefox,
-Thunderbird, Komodo, etc.) in development. See ?koCmd in the svIDE package to
-learn how to install and use it. Once you have installed the 'SciViews x.y'
-toolbox folder in Komodo, go to 'SciViews x.y/Communication/Socket client'. If
-the R socket server is started on the same machine as explaned here above,
-double clicking on this macro triggers some code in R that asks for the syntax
-of the 'library()' function, and then, disconnect immediately. The result is
-printed in the 'Command Output' panel in Komodo (open the panel at the bottom
-if necessary). This is just a proof-of-concept for the moment.
+Thunderbird, Komodo, etc.). See ?ko_cmd in the svIDE package to learn how to
+install and use it. Once you have installed the 'SciViews x.y' toolbox folder in
+Komodo, go to 'SciViews x.y/Communication/Socket client'. If the R socket server
+is started on the same machine as explaned here above, double clicking on this
+macro triggers some code in R that asks for the syntax of the 'library()'
+function, and then, disconnect immediately. The result is printed in the
+'Command Output' panel in Komodo (open the panel at the bottom if necessary).
+This is just a proof-of-concept for the moment.
 
 Enjoy!
 

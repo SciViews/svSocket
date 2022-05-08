@@ -1,37 +1,36 @@
-## CLI torture test, copyright (c) Ph. Grosjean (phgrosjean@sciviews.org)
-## GNU GPL => 2 license
-## A series of commands to check for R CLI (or console widget)
-## Note: test this in English, but also, in internationalized versions of R!
+# CLI torture test, copyright (c) Ph. Grosjean (phgrosjean@sciviews.org)
+# GNU GPL >= 2 license
+# A series of commands to check for R CLI (or console widget)
+# Note: test this in English, but also, in internationalized versions of R!
 
-## Copy all text in testCLIcmd.r and paste it in a console window. Copy all
-## the content of the console into a document (for instance testCLIres.r)
-## Then, run the following code that will do the same, but from a
-## processSocket() as if it is issued by a client
-## Then, compare both files
+# Copy all text in testCLIcmd.r and paste it in a console window. Copy all
+# the content of the console into a document (for instance testCLIres.r)
+# Then, run the following code that will do the same, but from a
+# processSocket() as if it is issued by a client
+# Then, compare both files
 
-## To test in french, $LANG=fr_FR.UTF8 R or
+# To test in French, $LANG=fr_FR.UTF8 R or
 Sys.setenv(LANG = "fr_FR.UTF8")
 
-## Open a clean R session, then, issue these commands and copy/paste the content
-## of testCLIcmd.r in it... Copy the results from the console into a *.save file
-require(svSocket) || stop("Package 'svSocket' is required")
-#source('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/R/RSocketServer.R')
-TempEnv_()
+# Open a clean R session, then, issue these commands and copy/paste the content
+# of testCLIcmd.r in it... Copy the results from the console into a *.save file
+library(svMisc)
+library(svSocket)
+temp_env()
 res <- outfile <- out <- i <- cmdfile <- cmd0 <- cmd <- ""
 options(width = 80)
 
-
-## Run this to generate output with processSocket()
-setwd('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/')
+# Run this to generate output with process_socket_server()
+temp_dir <- temp_dir()
+setwd(temp_dir)
+# Copy this file in temp_dir first!
 cmdfile <- 'testCLIcmd.R'
 outfile <- 'testCLIcmd.out'
-require(svSocket) || stop("Package 'svSocket' is required")
-#source('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/R/RSocketServer.R')
 options(width = 80)
 
-## Read the file with commands
+# Read the file with commands
 cmd <- readLines(cmdfile)
-## Run these commands
+# Run these commands
 out <- file(outfile, "w")
 cmd0 <- ""
 cat("> ", file = out)
@@ -39,29 +38,27 @@ for (i in 1:length(cmd)) {
     cat(cmd[i], "\n", sep = "", file = out)
     if (cmd0 == "") cmd0 <- cmd[i] else
         cmd0 <- paste(cmd0, cmd[i], sep = "<<<n>>>")
-    res <- processSocket(cmd0, "", "")
+    res <- process_socket_server(cmd0, "", "")
     if (res != "+ ") cmd0 <- ""  # Not a multiline command
     cat(res, file = out)
 }
 close(out)
-## Until here...
+# Until here...
 
 
+# User interrupt
+# Here is a long calculation. Hit <esc> or <ctrl-c> in mother R app during
+# calculation. See how interrupt is managed
+##for (i in 1:10000000) i
+# Here is a command that issues a very long output. Let it calculate
+# and when output starts, hit <esc> or <ctrl-c> in mother R app
+# See how interrupt is managed
+##1:100000    # This is like if I have to use flush.console()
+# TODO: correct handling of flush.console()
 
-
-## User interrupt
-## Here is a long calculation. Hit <esc> or <ctrl-c> in mother R app during
-## calculation. See how interrupt is managed
-###for (i in 1:10000000) i
-## Here is a command that issues a very long output. Let it calculate
-## and when output starts, hit <esc> or <ctrl-c> in mother R app
-## See how interrupt is managed
-###1:100000    # This is like if I have to use flush.console()
-## TODO: correct handling of flush.console()
-
-## Interaction at the command line
+# Interaction at the command line
 #scan()  # Read in numbers
-## Other tests to be implement
+# Other tests to be implement
 #readline()
 #non graphical menu()
 #create graph (are there problems between the graph device and Tcl/Tk event loop?)

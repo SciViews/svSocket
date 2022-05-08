@@ -1,23 +1,23 @@
 .onLoad <- function(lib, pkg) {
   # Create our SciViews task callback manager
   #PhG: now moved to svKomodo!
-  #assignTemp(".svTaskCallbackManager", svTaskCallbackManager())
+  #assign_temp(".svTaskCallbackManager", svTaskCallbackManager())
 }
 
 .onUnload <- function(libpath) {
   #PhG: now moved to svKomodo!
   #removeTaskCallback("SV-taskCallbackManager")
-  #rmTemp(".svTaskCallbackManager")
+  #rm_temp(".svTaskCallbackManager")
 
   #PhG: From .Last.lib(), now in .onUnload()
   # Make sure that all clients are disconnected
   # and all servers are closed
-  Servers <- getSocketServers()
-  if (is.null(Servers) || length(Servers) < 1)
+  servers <- get_socket_servers()
+  if (is.null(servers) || length(servers) < 1)
     return()
-  cat(ngettext(length(Servers), "Stopping socket server\n",
+  cat(ngettext(length(servers), "Stopping socket server\n",
     "Stopping socket servers\n"))
-  stopSocketServer("all")
+  stop_socket_server("all")
   # TODO: make sure to delete all client environments
-  # (or do it in stopSocketServer()?)
+  # (or do it in stop_socket_server()?)
 }

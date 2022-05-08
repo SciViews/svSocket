@@ -29,7 +29,7 @@ Ryczkowski
 sciviews
 SciViews
 serializable
-serverport
+server_port
 SimpleClient
 sockclientconn
 sockconn
