@@ -16,7 +16,7 @@ The latest stable version of {svSocket} can simply be installed from [CRAN](http
 install.packages("svSocket")
 ```
 
-You can also install the latest developement version. Make sure you have the {remotes} R package installed:
+You can also install the latest development version. Make sure you have the {remotes} R package installed:
 
 ``` r
 install.packages("remotes")
