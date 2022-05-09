@@ -44,7 +44,7 @@ jobs:
       - name: Install X11 dependencies on MacOS
         if: runner.os == 'macOS'
         run: |
-          brew cask install xquartz
+          brew install --cask xquartz
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
