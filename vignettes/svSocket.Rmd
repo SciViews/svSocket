@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> The SciViews {svSocket} server implements an R server that is mainly designed to interact with the R prompt from a separate process. The {svSocket} clients and the R console share the same global environment (`.GlobalEnv`). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are [Tinn-R](https://tinn-r.org/en/) and Komodo with the [SciViews-K extension](https://github.com/SciViews/sciviewsk).
+> The SciViews {svSocket} server implements an R server that is mainly designed to interact with the R prompt from a separate process. The {svSocket} clients and the R console share the same global environment (`.GlobalEnv`). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are [Tinn-R](https://tinn-r.org/en/) and Komodo IDE with the [SciViews-K extension](https://github.com/SciViews/sciviewsk).
 
 ## Quick install and use
 
