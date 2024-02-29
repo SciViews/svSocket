@@ -38,6 +38,11 @@
 #' R (console).
 #'
 #' @note
+#' Due to a change in R 4.3.x in its event loop, some Tcl socket events are not
+#' processes and this prevents the R socket server to work properly. This is
+#' corrected in R 4.4.0. The socket server also works well with R 4.0.x, R 4.1.x
+#' and R 4.2.x.
+#'
 #' One can write a different `procfun()` function than the default one for
 #' special servers. That function must accept one argument (a string with the
 #' command send by the client) and it must return a character string containing
@@ -239,7 +244,7 @@ procfun = process_socket_server, secure = FALSE, local = !secure) {
       "}",
       paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
       paste("fileevent $sock readable [list sock_handler_", port,
-        " $sock] }", sep = "")),
+        " $sock]; update idletasks }", sep = "")),
     collapse = "\n")
   } else {
     cmd <- paste(c(paste("proc sock_accept_", port, " {sock addr port} {",
@@ -274,7 +279,7 @@ procfun = process_socket_server, secure = FALSE, local = !secure) {
     .Tcl(paste("set Rserver_", port, "(main) [tls::socket -server sock_accept_",
       #port, " -require 1 -cafile caPublic.pem -certfile ~/serverR.pem ",
       port, " -certfile Rserver.pem -keyfile Rserver.pem -ssl2 1 -ssl3 1 -tls1 0 -require 0 -request 0 ",
-      port, "]", sep = ""))
+      port, "]; update idletasks", sep = ""))
       # For client, use:
       # set chan [tls::socket -cafile caPublic.pem -certfile ~/clientR.pem server.site.net $port]
       # To generate the keys:
@@ -285,7 +290,7 @@ procfun = process_socket_server, secure = FALSE, local = !secure) {
       # ... and answer to a couple of questions
   } else {
     .Tcl(paste("set Rserver_", port, "(main) [socket -server sock_accept_",
-      port, " ", port, "]", sep = ""))
+      port, " ", port, "]; update idletasks", sep = ""))
   }
 
   # Add this port in the variable 'Socket_servers' in SciViews:TempEnv

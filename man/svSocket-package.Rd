@@ -9,11 +9,11 @@
 A socket server allows to connect clients to R.
 }
 \details{
-The SciViews {svSocket} package provides a stateful, multi-client and
+The SciViews \{svSocket\} package provides a stateful, multi-client and
 preemptive socket server. Socket transaction are operational even when R is
 busy in its main event loop (calculation done at the prompt). This R socket
 server uses the excellent asynchronous socket ports management by Tcl, and
-thus, it needs a working version of Tcl/Tk (>= 8.4) and of the {tcltk} R
+thus, it needs a working version of Tcl/Tk (>= 8.4) and of the \{tcltk\} R
 package.
 
 A particular effort has been made to handle requests the same way as if they
@@ -30,9 +30,14 @@ also be used to exchange data between separate R processes. The
 \code{\link[=eval_socket_server]{eval_socket_server()}} function is particularly useful for this. Note,
 however, that R objects are serialized into a text (i.e., using \code{\link[=dump]{dump()}})
 format, currently. It means that the transfer of large object is not as
-efficient as, say {Rserver} ({Rserver} exchanges R objects in binary format,
-but {Rserver} is not stateful, clients do not share the same global workspace
+efficient as, say \{Rserver\} (\{Rserver\} exchanges R objects in binary format,
+but \{Rserver\} is not stateful, clients do not share the same global workspace
 and it does not allow concurrent use of the command prompt).
+
+Due to a change in R 4.3.x in its event loop, some Tcl socket events are not
+processes and this prevents the R socket server to work properly. This is
+corrected in R 4.4.0. The socket server also works well with R 4.0.x, R 4.1.x
+and R 4.2.x.
 
 See \code{\link[=start_socket_server]{start_socket_server()}} and \code{\link[=process_socket_server]{process_socket_server()}} for further
 implementation details.

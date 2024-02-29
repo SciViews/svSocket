@@ -1,3 +1,23 @@
+# svSocket 1.1.5
+
+-   CITATION eliminated because CRAN continues to complain.
+
+# svSocket 1.1.4
+
+-   Small change in CITATION to avoid a note in CRAN.
+
+# svSocket 1.1.3
+
+-   A link to the Komodo IDE web site in the vignette was 404. It is fixed.
+
+# svSocket 1.1.2
+
+-   Minor correction in the man page of `svSocket-package`.
+
+# svSocket 1.1.1
+
+-   Due to a change in the R event loop in R 4.3.x, the socket server does not work with all the 4.3.x versions of R. It is fixed in R 4.4.0. Notes are added in the documentation of the package and in `?startSocketServer`.
+
 # svSocket 1.1.0
 
 -   All functions are renamed to use snake_case, e.g., `startSocketServer()` is renamed `start_socket_server()`. Old names remain for backward compatibility, but they are deprecated.

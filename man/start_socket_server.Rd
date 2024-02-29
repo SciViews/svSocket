@@ -71,6 +71,11 @@ svSocket package you will find \code{testCLI.R}, a script to torture test CLI fo
 R (console).
 }
 \note{
+Due to a change in R 4.3.x in its event loop, some Tcl socket events are not
+processes and this prevents the R socket server to work properly. This is
+corrected in R 4.4.0. The socket server also works well with R 4.0.x, R 4.1.x
+and R 4.2.x.
+
 One can write a different \code{procfun()} function than the default one for
 special servers. That function must accept one argument (a string with the
 command send by the client) and it must return a character string containing
