@@ -44,10 +44,12 @@ jobs:
         run: |
           brew install --cask xquartz
 
-      - name: Export DISPLAY on Linux
+      - name: Install xvfb on Linux
         if: runner.os == 'Linux'
         run: |
-          export DISPLAY=:99.0
+        sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0
+        # start xvfb in the background
+        sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
