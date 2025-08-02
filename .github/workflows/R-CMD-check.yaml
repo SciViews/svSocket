@@ -44,9 +44,10 @@ jobs:
         run: |
           brew install --cask xquartz
 
-      - name: XVFB under linux
+      - name: Export DISPLAY on Linux
         if: runner.os == 'Linux'
-        uses: coactions/setup-xvfb@v1
+        run: |
+          export DISPLAY=:99.0
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
