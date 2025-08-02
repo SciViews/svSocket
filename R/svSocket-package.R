@@ -1,4 +1,5 @@
-#' @details
+#' 'SciViews::R' - Socket Server
+#'
 #' The SciViews \{svSocket\} package provides a stateful, multi-client and
 #' preemptive socket server. Socket transaction are operational even when R is
 #' busy in its main event loop (calculation done at the prompt). This R socket
@@ -31,14 +32,13 @@
 #'
 #' See [start_socket_server()] and [process_socket_server()] for further
 #' implementation details.
-#' @keywords internal
-"_PACKAGE"
 
-#' @importFrom tcltk tcl .Tcl tclRequire tclVar tclvalue .Tcl.callback
-#' @importFrom svMisc capture_all parse_text temp_env get_temp assign_temp rm_temp
-#' @importFrom utils URLdecode
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
+#' @importFrom svMisc capture_all parse_text temp_env get_temp assign_temp rm_temp
+#' @importFrom tcltk tcl .Tcl tclRequire tclVar tclvalue .Tcl.callback
+#' @importFrom utils URLdecode
+
 ## usethis namespace: end
-NULL
+"_PACKAGE"

@@ -1,7 +1,5 @@
 # svSocket To Do list
 
--   Rework the mechanism to add history item to R from within Komodo.
-
 -   Easy redefinition of `options(width = ...)` to adjust width of output to the GUI client R console.
 
 -   Make use of a config file for the server + `par_socket_server()` to change (some!) parameters of the server.

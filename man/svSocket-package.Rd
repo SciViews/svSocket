@@ -4,18 +4,16 @@
 \name{svSocket-package}
 \alias{svSocket}
 \alias{svSocket-package}
-\title{svSocket: 'SciViews' - Socket Server}
+\title{'SciViews::R' - Socket Server}
 \description{
-A socket server allows to connect clients to R.
-}
-\details{
 The SciViews \{svSocket\} package provides a stateful, multi-client and
 preemptive socket server. Socket transaction are operational even when R is
 busy in its main event loop (calculation done at the prompt). This R socket
 server uses the excellent asynchronous socket ports management by Tcl, and
 thus, it needs a working version of Tcl/Tk (>= 8.4) and of the \{tcltk\} R
 package.
-
+}
+\details{
 A particular effort has been made to handle requests the same way as if they
 where introduced at the command prompt, including presentation of the output.
 However, the server sends results back to the client only at the end of the
@@ -47,6 +45,7 @@ Useful links:
 \itemize{
   \item \url{https://github.com/SciViews/svSocket}
   \item \url{https://www.sciviews.org/svSocket/}
+  \item \url{https://sciviews.r-universe.dev/svSocket}
   \item Report bugs at \url{https://github.com/SciViews/svSocket/issues}
 }
 
@@ -60,4 +59,3 @@ Other contributors:
 }
 
 }
-\keyword{internal}

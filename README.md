@@ -1,8 +1,8 @@
-# svSocket
+# 'SciViews::R' - Socket Server
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/SciViews/svSocket/workflows/R-CMD-check/badge.svg)](https://github.com/SciViews/svSocket/actions) [![Win Build Status](https://ci.appveyor.com/api/projects/status/github/SciViews/svSocket?branch=master&svg=true)](https://ci.appveyor.com/project/phgrosjean/svSocket) [![Coverage Status](https://img.shields.io/codecov/c/github/SciViews/svSocket/master.svg)](https://codecov.io/github/SciViews/svSocket?branch=master) [![CRAN Status](https://www.r-pkg.org/badges/version/svSocket)](https://cran.r-project.org/package=svSocket) [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html) [![Life cycle stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![R-CMD-check](https://github.com/SciViews/svSocket/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SciViews/svSocket/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/SciViews/svSocket/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SciViews/svSocket?branch=main) [![CRAN status](https://www.r-pkg.org/badges/version/svSocket)](https://cran.r-project.org/package=svSocket) [![r-universe status](https://sciviews.r-universe.dev/badges/svSocket)](https://sciviews.r-universe.dev/svSocket) [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html) [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 
 <!-- badges: end -->
 
@@ -30,7 +30,6 @@ remotes::install_github("SciViews/svSocket")
 
 R should install all required dependencies automatically, and then it should compile and install {svSocket}.
 
-Latest devel version of {svSocket} (source + Windows binaries for the latest stable version of R at the time of compilation) is also available from [appveyor](https://ci.appveyor.com/project/phgrosjean/svSocket/build/artifacts).
 
 ## Further explore {svSocket}
 

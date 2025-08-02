@@ -1,6 +1,6 @@
 # svSocket 1.1.5
 
--   CITATION eliminated because CRAN continues to complain.
+-   CITATION changed again to comply with CRAN.
 
 # svSocket 1.1.4
 

@@ -1,24 +1,23 @@
 ---
-title: "SciViews socket server"
+title: "'SciViews::R' - Socket Server"
 author: "Philippe Grosjean (phgrosjean@sciviews.org)"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{SciViews socket server}
+  %\VignetteIndexEntry{'SciViews::R' - Socket Server}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-> The SciViews {svSocket} server implements an R server that is mainly designed to interact with the R prompt from a separate process. The {svSocket} clients and the R console share the same global environment (`.GlobalEnv`). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are [Tinn-R](https://tinn-r.org/en/) and Komodo IDE with the [SciViews-K extension](https://github.com/SciViews/sciviewsk).
+> The SciViews {svSocket} server implements an R server that is mainly designed to interact with the R prompt from a separate process. The {svSocket} clients and the R console share the same global environment (`.GlobalEnv`). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. An example of such GUIs is [Tinn-R](https://tinn-r.org/en/). It also served R [Komodo IDE](https://docs.activestate.com/komodo/12/) with the [SciViews-K extension](https://github.com/SciViews/sciviewsk), but it is not developed anymore since [RStudio](https://posit.co/download/rstudio-desktop/) is a better alternative.
 
 ## Quick install and use
 

@@ -1,0 +1,13 @@
+bibentry(
+  bibtype = "Misc",
+  header  = "To cite SciViews::R in publications, please use",
+  author  = c(person("Philippe", "Grosjean", role = c("aut", "cre"),
+                     email = "phgrosjean@sciviews.org",
+                     comment = c(ORCID = "0000-0002-2694-9471")),
+              person("Guyliann", "Engels", role = "aut",
+                     email = "guyliann.engels@umons.ac.be",
+                     comment = c(ORCID = "0000-0001-9514-1014"))),
+  title   = "SciViews: A Series of Tools for the R Language and Environment",
+  year    = "2024",
+  url     = "https://sciviews.r-universe.dev/",
+)
