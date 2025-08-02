@@ -1,66 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://www.sciviews.org/svSocket/404.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/TODO.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/articles/svSocket.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/index.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/close_socket_clients.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/eval_socket_server.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/get_socket_clients.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/get_socket_server_name.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/get_socket_servers.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/par_socket_server.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/process_socket_server.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/send_socket_clients.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/socket_client_connection.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/start_socket_server.html</loc>
-  </url>
-  <url>
-    <loc>https://www.sciviews.org/svSocket/reference/svSocket-package.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://www.sciviews.org/svSocket/404.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/LICENSE.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/TODO.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/articles/index.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/articles/svSocket.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/authors.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/index.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/news/index.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/close_socket_clients.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/eval_socket_server.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/get_socket_clients.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/get_socket_server_name.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/get_socket_servers.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/index.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/par_socket_server.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/process_socket_server.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/send_socket_clients.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/socket_client_connection.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/start_socket_server.html</loc></url>
+<url><loc>https://www.sciviews.org/svSocket/reference/svSocket-package.html</loc></url>
 </urlset>
+
