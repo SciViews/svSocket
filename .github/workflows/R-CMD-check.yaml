@@ -44,6 +44,11 @@ jobs:
         run: |
           brew install --cask xquartz
 
+      - name: X11 display on Linux
+        if: runner.os == 'Linux'
+        run: |
+          export DISPLAY="127.0.0.1:10.0"
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck

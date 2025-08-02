@@ -1,4 +1,4 @@
-# 'SciViews::R' - Socket Server
+# 'SciViews::R' - Socket Server <a href='https://www.sciviews.org/svSocket'><img src='man/figures/logo.png' align='right' height='139'/></a>
 
 <!-- badges: start -->
 
