@@ -13,7 +13,11 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/SciViews/svSocket/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SciViews/svSocket/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/SciViews/svSocket/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SciViews/svSocket?branch=main) [![CRAN status](https://www.r-pkg.org/badges/version/svSocket)](https://cran.r-project.org/package=svSocket) [![r-universe status](https://sciviews.r-universe.dev/badges/svSocket)](https://sciviews.r-universe.dev/svSocket) [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html) [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Codecov test coverage](https://codecov.io/gh/SciViews/svSocket/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SciViews/svSocket?branch=main)
+[![CRAN status](https://www.r-pkg.org/badges/version/svSocket)](https://cran.r-project.org/package=svSocket)
+[![r-universe status](https://sciviews.r-universe.dev/badges/svSocket)](https://sciviews.r-universe.dev/svSocket)
+[![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 A socket server that allows for another process to connect to R and to interact with it as if it was at the command line directly.

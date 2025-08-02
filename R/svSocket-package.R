@@ -39,6 +39,5 @@
 #' @importFrom svMisc capture_all parse_text temp_env get_temp assign_temp rm_temp
 #' @importFrom tcltk tcl .Tcl tclRequire tclVar tclvalue .Tcl.callback
 #' @importFrom utils URLdecode
-
 ## usethis namespace: end
 "_PACKAGE"
