@@ -7,7 +7,7 @@ bibentry(
               person("Guyliann", "Engels", role = "aut",
                      email = "guyliann.engels@umons.ac.be",
                      comment = c(ORCID = "0000-0001-9514-1014"))),
-  title   = "SciViews: A Series of Tools for the R Language and Environment",
-  year    = "2024",
+  title   = "'SciViews::R' - Data Science R Dialect",
+  year    = "2025",
   url     = "https://sciviews.r-universe.dev/",
 )
